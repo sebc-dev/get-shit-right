@@ -26,7 +26,7 @@ Temps écoulé : ~[N] min
 Reprendre ? [Oui] [Non, nouvelle session] [Abandonner]
 ```
 
-- **Oui** → charger le skill `discovery` + la section XML de la prochaine phase → continuer depuis la phase suivante
+- **Oui** → charger la section XML de la prochaine phase depuis `.claude/gtd/discovery-phases.md` → continuer depuis la phase suivante
 - **Non, nouvelle session** → archiver la session (ajouter suffixe timestamp), lancer `/gtd:discover`
 - **Abandonner** → basculer vers le flow `/gtd:discover-abort`
 
@@ -37,7 +37,7 @@ Si le Research Log contient une entrée avec `Status: Pending` :
 ```
 Session précédente trouvée.
 Projet : [description]
-⚠️ Recherche Deep Research en attente ([TYPE])
+Recherche Deep Research en attente ([TYPE])
 
 Tu as les résultats ?
 [Oui, je les colle] [Non, skip la recherche] [Relancer le prompt]
@@ -49,4 +49,4 @@ Tu as les résultats ?
 
 ## Après reprise
 
-Charger le skill `discovery` et la section XML correspondant à la phase en cours. Reprendre le flow exactement où il s'était arrêté, avec le contexte capturé dans la session.
+Charger la section XML correspondant à la phase en cours depuis `.claude/gtd/discovery-phases.md`. Reprendre le flow exactement où il s'était arrêté, avec le contexte capturé dans la session.

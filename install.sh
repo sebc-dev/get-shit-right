@@ -59,16 +59,17 @@ phase_discovery_desc() {
 
 phase_discovery_files() {
   cat <<'FILES'
-.claude/skills/gtd-discovery/discovery.md
-.claude/skills/gtd-discovery/discovery-phases.md
-.claude/skills/gtd-discovery/discovery-output.md
-.claude/skills/gtd-discovery/discovery-research.md
+.claude/gtd/discovery-phases.md
+.claude/gtd/discovery-output.md
+.claude/gtd/discovery-research.md
 .claude/commands/gtd/discover.md
 .claude/commands/gtd/discover-resume.md
 .claude/commands/gtd/discover-abort.md
 .claude/commands/gtd/discover-save.md
 .claude/commands/gtd/bootstrap.md
 .claude/agents/research-prompt-agent.md
+.claude/agents/gtd-synthesizer.md
+.claude/agents/gtd-bootstrapper.md
 FILES
 }
 

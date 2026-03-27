@@ -16,7 +16,7 @@ human_ai_ratio: 20/80
 
 ## Génération du discovery.md partiel
 
-Lire `<discovery-template>` depuis `.claude/skills/gtd-discovery/discovery-output.md`.
+Lire `<discovery-template>` depuis `.claude/gtd/discovery-output.md`.
 
 Générer un `discovery.md` avec :
 
