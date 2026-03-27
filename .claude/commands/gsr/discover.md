@@ -4,7 +4,7 @@ description: Start a new discovery session — interactive 6-phase interview gen
 human_ai_ratio: 70/30
 ---
 
-# /gtd:discover "$ARGUMENTS"
+# /gsr:discover "$ARGUMENTS"
 
 ## Pré-checks
 
@@ -13,8 +13,8 @@ human_ai_ratio: 70/30
    - Si "Non" → stop
 
 2. Vérifier si une session existe dans `.claude/discovery-session.md` :
-   - Si oui → "Une session discovery est en cours (Phase [N]/6). Utilise `/gtd:discover-resume` pour la reprendre, ou confirme pour en démarrer une nouvelle (l'ancienne sera archivée). [Reprendre] [Nouvelle session]"
-   - Si "Reprendre" → basculer vers le flow de `/gtd:discover-resume`
+   - Si oui → "Une session discovery est en cours (Phase [N]/6). Utilise `/gsr:discover-resume` pour la reprendre, ou confirme pour en démarrer une nouvelle (l'ancienne sera archivée). [Reprendre] [Nouvelle session]"
+   - Si "Reprendre" → basculer vers le flow de `/gsr:discover-resume`
    - Si "Nouvelle session" → archiver l'ancienne session, continuer
 
 ## Initialisation
@@ -100,11 +100,11 @@ Tu es un consultant produit/tech qui guide un développeur solo à travers une i
 
 ## Research Gates
 
-Un Research Gate est un point du workflow où une recherche pourrait débloquer une décision. Détails dans `.claude/gtd/discovery-research.md`.
+Un Research Gate est un point du workflow où une recherche pourrait débloquer une décision. Détails dans `.claude/gsr/discovery-research.md`.
 
 **Comportement général :**
 
-1. Détecter le déclencheur (voir `<trigger-types>` dans `.claude/gtd/discovery-research.md`)
+1. Détecter le déclencheur (voir `<trigger-types>` dans `.claude/gsr/discovery-research.md`)
 2. Proposer 3 options à l'utilisateur :
    - `[A]` Recherche rapide — web search (~30s)
    - `[B]` Deep Research — prompt pour Claude Desktop (~15-30min)
@@ -134,11 +134,11 @@ Un Research Gate est un point du workflow où une recherche pourrait débloquer 
 - Checklist de complétude
 - Timestamps (début, mise à jour, durée écoulée)
 
-**Format session :** voir `<session-template>` dans `.claude/gtd/discovery-output.md`
+**Format session :** voir `<session-template>` dans `.claude/gsr/discovery-output.md`
 
 ## Boucle conversationnelle — Phases 1 à 5
 
-Les 6 phases et leurs détails (questions, critères de sortie, comportements) sont dans `.claude/gtd/discovery-phases.md`.
+Les 6 phases et leurs détails (questions, critères de sortie, comportements) sont dans `.claude/gsr/discovery-phases.md`.
 
 | # | Phase | Objectif | Reference section |
 |---|-------|----------|-------------------|
@@ -149,11 +149,11 @@ Les 6 phases et leurs détails (questions, critères de sortie, comportements) s
 | 4 | Architecture | Pattern architectural + schéma ASCII | `<phase-4-architecture>` |
 | 5 | Scope | MVP, exclusions, risques | `<phase-5-scope>` |
 
-**Chargement sélectif :** au début de chaque phase, lis la section XML correspondante dans `.claude/gtd/discovery-phases.md`. Ne charge qu'une phase à la fois.
+**Chargement sélectif :** au début de chaque phase, lis la section XML correspondante dans `.claude/gsr/discovery-phases.md`. Ne charge qu'une phase à la fois.
 
 ### Lancement Phase 1
 
-1. Lire la section `<phase-1-problem>` depuis `.claude/gtd/discovery-phases.md`
+1. Lire la section `<phase-1-problem>` depuis `.claude/gsr/discovery-phases.md`
 
 2. Message d'accueil :
    ```
@@ -180,7 +180,7 @@ Les 6 phases et leurs détails (questions, critères de sortie, comportements) s
 
 ### Checkpoint mi-parcours (après Phase 2)
 
-Charger `<checkpoint>` depuis `.claude/gtd/discovery-phases.md`.
+Charger `<checkpoint>` depuis `.claude/gsr/discovery-phases.md`.
 Proposer un récap selon la logique documentée (recommander OUI si clarifications, contraintes nombreuses, contradictions).
 
 ## Phase 6 — Synthèse (Agent)
@@ -189,7 +189,7 @@ Après la Phase 5, la synthèse est déléguée à un agent spécialisé :
 
 1. Sauvegarder la session avec toutes les données des phases 1-5
 
-2. Spawner l'agent `gtd-synthesizer` avec le prompt :
+2. Spawner l'agent `gsr-synthesizer` avec le prompt :
    ```
    Session : .claude/discovery-session.md
    Répertoire projet : [cwd]
@@ -203,7 +203,7 @@ Après la Phase 5, la synthèse est déléguée à un agent spécialisé :
      Discovery terminée.
 
      discovery.md généré ([N] mots, 7/7 sections).
-     Lance `/gtd:bootstrap` pour générer la structure projet.
+     Lance `/gsr:bootstrap` pour générer la structure projet.
      ```
    - **Complétude FAIL** (champ requis manquant) :
      ```

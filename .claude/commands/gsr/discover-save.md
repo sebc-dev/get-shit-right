@@ -4,7 +4,7 @@ description: Save partial discovery.md from incomplete session
 human_ai_ratio: 20/80
 ---
 
-# /gtd:discover-save
+# /gsr:discover-save
 
 ## Pré-checks
 
@@ -16,7 +16,7 @@ human_ai_ratio: 20/80
 
 ## Génération du discovery.md partiel
 
-Lire `<discovery-template>` depuis `.claude/gtd/discovery-output.md`.
+Lire `<discovery-template>` depuis `.claude/gsr/discovery-output.md`.
 
 Générer un `discovery.md` avec :
 
@@ -50,8 +50,8 @@ Générer un `discovery.md` avec :
 Sections complétées : [liste]
 Sections manquantes : [liste]
 
-Pour compléter plus tard : `/gtd:discover-resume`
-Pour bootstrapper avec ce qu'on a : `/gtd:bootstrap discovery.md --minimal`
+Pour compléter plus tard : `/gsr:discover-resume`
+Pour bootstrapper avec ce qu'on a : `/gsr:bootstrap discovery.md --minimal`
 ```
 
 La session `.claude/discovery-session.md` est conservée pour permettre la reprise.

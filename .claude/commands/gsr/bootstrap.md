@@ -4,7 +4,7 @@ description: Generate project structure (CLAUDE.md, SPEC.md, docs) from complete
 human_ai_ratio: 20/80
 ---
 
-# /gtd:bootstrap $ARGUMENTS
+# /gsr:bootstrap $ARGUMENTS
 
 ## Parse des arguments
 
@@ -17,24 +17,24 @@ human_ai_ratio: 20/80
 ## Pré-checks
 
 1. Vérifier que le fichier discovery.md existe au chemin spécifié
-   - Si non → "Fichier non trouvé : [chemin]. Vérifie le chemin ou lance `/gtd:discover` d'abord."
+   - Si non → "Fichier non trouvé : [chemin]. Vérifie le chemin ou lance `/gsr:discover` d'abord."
 
 2. Lire discovery.md et vérifier les 7 sections :
    - Si header contient "Discovery incomplète" :
      - Si `--minimal` → continuer avec les sections disponibles
-     - Sinon → "Discovery incomplète ([sections manquantes]). Options : [Compléter avec /gtd:discover-resume] [Bootstrapper en mode --minimal]"
+     - Sinon → "Discovery incomplète ([sections manquantes]). Options : [Compléter avec /gsr:discover-resume] [Bootstrapper en mode --minimal]"
 
 ## Génération (Agent)
 
-Spawner l'agent `gtd-bootstrapper` avec le prompt :
+Spawner l'agent `gsr-bootstrapper` avec le prompt :
 ```
 Discovery : [chemin discovery.md]
-Templates : .claude/gtd/discovery-output.md
+Templates : .claude/gsr/discovery-output.md
 Flags : [--dry-run] [--no-adr] [--minimal]
 Répertoire projet : [cwd]
 
 Génère la structure projet depuis discovery.md.
-Charger les templates depuis .claude/gtd/discovery-output.md.
+Charger les templates depuis .claude/gsr/discovery-output.md.
 ```
 
 ## Traitement du résultat
@@ -64,5 +64,5 @@ Prochaines étapes :
 1. Revoir CLAUDE.md — ajuster si nécessaire
 2. Revoir SPEC.md — compléter les critères d'acceptation si besoin
 3. git init && git add -A && git commit -m "Initial bootstrap from discovery"
-4. /gtd:plan pour planifier l'implémentation
+4. /gsr:plan pour planifier l'implémentation
 ```

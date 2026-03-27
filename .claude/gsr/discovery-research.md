@@ -135,7 +135,7 @@ Lire `.claude/research-prompt.md` et :
 1. Afficher le prompt Deep Research dans un bloc de code (copier-coller facile)
 2. Afficher les queries web search comme alternative rapide
 3. Proposer : `[Copié, je lance Deep Research] [Plutôt la recherche rapide] [Skip]`
-4. Si "Copié" → sauvegarder session + "Reviens avec /gtd:discover-resume quand tu as les résultats."
+4. Si "Copié" → sauvegarder session + "Reviens avec /gsr:discover-resume quand tu as les résultats."
 5. Si "Plutôt rapide" → exécuter les queries web search
 6. Si "Skip" → continuer sans recherche
 
@@ -147,7 +147,7 @@ Lire `.claude/research-prompt.md` et :
 
 ### Intégration des résultats Deep Research au retour
 
-Quand l'utilisateur revient avec `/gtd:discover-resume` et colle les résultats :
+Quand l'utilisateur revient avec `/gsr:discover-resume` et colle les résultats :
 1. Lire les résultats collés
 2. Extraire les points pertinents pour la phase en cours
 3. Mettre à jour le Research Log avec statut "Done" + résumé

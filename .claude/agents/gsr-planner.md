@@ -1,5 +1,5 @@
 ---
-name: gtd-planner
+name: gsr-planner
 description: >
   Décomposition et ordonnancement adaptatif. Fonctionne en 3 modes :
   roadmap (epics+stories), story (détail story), phases (phases atomiques).
@@ -8,7 +8,7 @@ tools: [Read, Write, Grep, Glob, WebSearch, WebFetch]
 model: opus
 ---
 
-# GTD Planner Agent
+# GSR Planner Agent
 
 ## Rôle
 

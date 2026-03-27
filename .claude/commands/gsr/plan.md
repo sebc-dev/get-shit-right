@@ -3,12 +3,12 @@ name: plan
 description: >
   Niveau 1 de la planification progressive. Analyse les documents bootstrap
   et génère un ROADMAP avec Epics et Stories. Ne descend pas au niveau des
-  phases — celles-ci seront planifiées au fur et à mesure avec /gtd:plan-phases.
+  phases — celles-ci seront planifiées au fur et à mesure avec /gsr:plan-phases.
   Args: [path/to/SPEC.md] [--granularity=fine|standard|flexible]
 human_ai_ratio: 40/60
 ---
 
-# /gtd:plan $ARGUMENTS
+# /gsr:plan $ARGUMENTS
 
 ## Parse arguments
 
@@ -21,17 +21,17 @@ human_ai_ratio: 40/60
 
 1. **SPEC.md existe** :
    - Vérifier que `spec_path` pointe vers un fichier existant et non vide
-   - Si absent → "SPEC.md introuvable. Lance `/gtd:bootstrap` d'abord pour générer les documents projet."
+   - Si absent → "SPEC.md introuvable. Lance `/gsr:bootstrap` d'abord pour générer les documents projet."
 
 2. **Documents bootstrap complets** :
    - Vérifier `docs/agent_docs/architecture.md` existe
    - Vérifier `docs/discovery.md` existe
    - Vérifier `CLAUDE.md` existe
-   - Si un document obligatoire manque → lister les manquants et proposer `/gtd:bootstrap`
+   - Si un document obligatoire manque → lister les manquants et proposer `/gsr:bootstrap`
 
 3. **Pas de session en cours** :
    - Vérifier si `.claude/plan-session.md` existe
-   - Si oui → "Une session de planification est en cours (Niveau [N]). Utilise `/gtd:plan-status` pour voir l'état, ou `/gtd:plan-abort` pour recommencer. [Continuer quand même] [Annuler]"
+   - Si oui → "Une session de planification est en cours (Niveau [N]). Utilise `/gsr:plan-status` pour voir l'état, ou `/gsr:plan-abort` pour recommencer. [Continuer quand même] [Annuler]"
    - Si "Continuer" → archiver l'ancienne session (renommer avec timestamp)
 
 4. **Pas de plan existant** :
@@ -41,7 +41,7 @@ human_ai_ratio: 40/60
 
 ## Étape 1 — Analyse (Agent)
 
-1. Spawner l'agent `gtd-analyst` avec le prompt :
+1. Spawner l'agent `gsr-analyst` avec le prompt :
    ```
    Analyse les documents bootstrap du projet.
    SPEC.md : [spec_path]
@@ -58,7 +58,7 @@ human_ai_ratio: 40/60
 
 ## Étape 2 — Décomposition (Agent)
 
-1. Spawner l'agent `gtd-planner` avec le prompt :
+1. Spawner l'agent `gsr-planner` avec le prompt :
    ```
    Mode : roadmap
    Session : .claude/plan-session.md
@@ -73,7 +73,7 @@ human_ai_ratio: 40/60
 
 3. Vérifier les Research Gates dans `## Research Needed` :
    - Si présent → pour chaque Research Gate :
-     a. Lire `.claude/gtd/plan-research.md` section `<integration-flow>`
+     a. Lire `.claude/gsr/plan-research.md` section `<integration-flow>`
      b. Proposer à l'utilisateur :
         ```
         Research Gate — [TYPE]
@@ -85,7 +85,7 @@ human_ai_ratio: 40/60
         [C] Continuer sans recherche
         ```
      c. Si [A] → spawner `research-prompt-agent` mode=quick → exécuter web searches → intégrer → re-spawner planner
-     d. Si [B] → spawner `research-prompt-agent` mode=deep → afficher instructions → sauvegarder session → stop (reprendre via /gtd:plan-resume ou relancer /gtd:plan)
+     d. Si [B] → spawner `research-prompt-agent` mode=deep → afficher instructions → sauvegarder session → stop (reprendre via /gsr:plan-resume ou relancer /gsr:plan)
      e. Si [C] → continuer avec l'approche best-effort
 
 ## Étape 3 — Review interactive
@@ -147,7 +147,7 @@ Sinon :
 
 1. Mettre à jour `plan-session.md` : déplacer le contenu validé dans `## Roadmap`
 
-2. Spawner l'agent `gtd-generator` avec le prompt :
+2. Spawner l'agent `gsr-generator` avec le prompt :
    ```
    Mode : roadmap
    Session : .claude/plan-session.md
@@ -155,7 +155,7 @@ Sinon :
    Répertoire projet : [cwd]
 
    Génère ROADMAP.md + EPIC.md par epic + arborescence stories.
-   Charger les templates depuis .claude/gtd/plan-output.md.
+   Charger les templates depuis .claude/gsr/plan-output.md.
    ```
 
 3. Vérifier que les fichiers ont été créés
@@ -171,10 +171,10 @@ Fichiers créés :
 - [N] dossiers stories créés (à détailler)
 
 Prochaine étape :
-  /gtd:plan-story [epic-slug]/[story-slug]
+  /gsr:plan-story [epic-slug]/[story-slug]
 
   Suggestion : commence par l'epic [premier dans l'ordonnancement]
-  → /gtd:plan-story [slug du premier epic]/[slug de la première story]
+  → /gsr:plan-story [slug du premier epic]/[slug de la première story]
 ```
 
 ## Garde-fous

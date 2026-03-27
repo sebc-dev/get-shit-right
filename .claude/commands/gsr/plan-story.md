@@ -8,7 +8,7 @@ description: >
 human_ai_ratio: 40/60
 ---
 
-# /gtd:plan-story $ARGUMENTS
+# /gsr:plan-story $ARGUMENTS
 
 ## Parse arguments
 
@@ -20,7 +20,7 @@ human_ai_ratio: 40/60
 
 1. **ROADMAP.md existe** :
    - Vérifier `docs/plan/ROADMAP.md` existe
-   - Si absent → "Aucun plan trouvé. Lance `/gtd:plan` d'abord."
+   - Si absent → "Aucun plan trouvé. Lance `/gsr:plan` d'abord."
 
 2. **Epic identifié** :
    - Vérifier `docs/plan/epics/[epic-slug]/EPIC.md` existe
@@ -44,7 +44,7 @@ human_ai_ratio: 40/60
 
 1. Lire ou créer `.claude/plan-session.md` :
    - Si existe → vérifier qu'il contient `## Analyse` (sinon, c'est une session corrompue)
-   - Si n'existe pas → "Session manquante. Relance `/gtd:plan` pour initialiser."
+   - Si n'existe pas → "Session manquante. Relance `/gsr:plan` pour initialiser."
 
 2. Mettre à jour la session :
    ```
@@ -55,7 +55,7 @@ human_ai_ratio: 40/60
 
 ## Étape 2 — Détail de la story (Agent)
 
-1. Spawner l'agent `gtd-planner` avec le prompt :
+1. Spawner l'agent `gsr-planner` avec le prompt :
    ```
    Mode : story
    Session : .claude/plan-session.md
@@ -72,9 +72,9 @@ human_ai_ratio: 40/60
 2. Vérifier le résultat dans `plan-session.md` section `## Story en cours`
 
 3. Vérifier les Research Gates dans `## Research Needed` :
-   - Si présent → même logique que `/gtd:plan` étape 2 :
+   - Si présent → même logique que `/gsr:plan` étape 2 :
      - Proposer [A] Quick / [B] Deep / [C] Continuer sans
-     - Si Deep → sauvegarder + instructions pour reprendre via `/gtd:plan-story [path] --resume`
+     - Si Deep → sauvegarder + instructions pour reprendre via `/gsr:plan-story [path] --resume`
 
 ## Étape 3 — Review interactive
 
@@ -112,7 +112,7 @@ human_ai_ratio: 40/60
 
 ## Étape 4 — Génération (Agent)
 
-1. Spawner l'agent `gtd-generator` avec le prompt :
+1. Spawner l'agent `gsr-generator` avec le prompt :
    ```
    Mode : story
    Session : .claude/plan-session.md
@@ -120,7 +120,7 @@ human_ai_ratio: 40/60
    Répertoire projet : [cwd]
 
    Génère STORY.md et mets à jour EPIC.md et ROADMAP.md.
-   Charger les templates depuis .claude/gtd/plan-output.md.
+   Charger les templates depuis .claude/gsr/plan-output.md.
    ```
 
 ## Étape 5 — Résumé
@@ -134,6 +134,6 @@ Estimation : [fourchette]
 Fichier créé : docs/plan/epics/[epic]/stories/[story]/STORY.md
 
 Prochaine étape :
-  Détailler une autre story : /gtd:plan-story [epic]/[autre-story]
-  Ou générer les phases : /gtd:plan-phases [epic]/[story]
+  Détailler une autre story : /gsr:plan-story [epic]/[autre-story]
+  Ou générer les phases : /gsr:plan-phases [epic]/[story]
 ```

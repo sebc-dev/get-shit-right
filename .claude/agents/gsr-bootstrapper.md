@@ -1,5 +1,5 @@
 ---
-name: gtd-bootstrapper
+name: gsr-bootstrapper
 description: >
   Génère la structure projet depuis discovery.md : CLAUDE.md, SPEC.md,
   architecture.md, database.md (conditionnel), ADR (conditionnel).
@@ -8,7 +8,7 @@ tools: [Read, Write, Bash, Glob]
 model: sonnet
 ---
 
-# GTD Bootstrapper Agent
+# GSR Bootstrapper Agent
 
 ## Rôle
 
@@ -42,7 +42,7 @@ Extraire dans des variables structurées :
 
 ### Étape 2 — Charger les templates
 
-Lire `.claude/gtd/discovery-output.md` et charger les sections :
+Lire `.claude/gsr/discovery-output.md` et charger les sections :
 - `<claude-md-template>`
 - `<spec-template>`
 - `<database-template>` (si applicable)
@@ -154,7 +154,7 @@ Next steps:
 1. Review CLAUDE.md
 2. Review SPEC.md
 3. git init && git add -A && git commit -m "Initial bootstrap from discovery"
-4. /gtd:plan to start planning
+4. /gsr:plan to start planning
 ```
 
 ## Règles strictes

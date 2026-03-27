@@ -102,8 +102,8 @@ Parallélisables : [02, 03, 04] après 01
 ```
 
 **Propriétés :**
-- Créé par /gtd:plan (niveau 1)
-- Sert de contexte pour /gtd:plan-story (niveau 2)
+- Créé par /gsr:plan (niveau 1)
+- Sert de contexte pour /gsr:plan-story (niveau 2)
 - Les stories sont listées mais pas détaillées
 </epic-template>
 
@@ -150,13 +150,13 @@ Parallélisables : [02, 03, 04] après 01
 
 ## Statut
 
-- [ ] Phases planifiées (/gtd:plan-phases)
+- [ ] Phases planifiées (/gsr:plan-phases)
 - [ ] Implémentée
 - [ ] Reviewée
 ```
 
 **Propriétés :**
-- Créé par /gtd:plan-story (niveau 2)
+- Créé par /gsr:plan-story (niveau 2)
 - Contient tout le contexte nécessaire pour découper en phases
 - Les acceptance criteria servent de base aux tests
 </story-template>
@@ -205,8 +205,8 @@ Parallélisables : [02, 03, 04] après 01
 | `config` | Configuration infrastructure, CI, env |
 
 **Propriétés :**
-- Créé par /gtd:plan-phases (niveau 3)
-- Directement exécutable par un futur /gtd:execute
+- Créé par /gsr:plan-phases (niveau 3)
+- Directement exécutable par un futur /gsr:execute
 - Chaque task a une commande de vérification
 - La checklist de review guide le passage humain
 </plan-template>
@@ -260,7 +260,7 @@ Parallélisables : [02, 03, 04] après 01
 ```
 
 **Propriétés :**
-- Créé par /gtd:plan-phases (niveau 3)
+- Créé par /gsr:plan-phases (niveau 3)
 - Chargé par un futur agent d'exécution au début de la phase
 - Contient UNIQUEMENT le contexte nécessaire — pas de bruit
 - Permet un `/clear` + chargement contexte frais en cas de saturation
@@ -288,7 +288,7 @@ Status: [OK | Approaching limit]
 ---
 
 ## Analyse
-[Résultat structuré de gtd-analyst — persisté entre les niveaux]
+[Résultat structuré de gsr-analyst — persisté entre les niveaux]
 
 ### Features MVP
 | # | Feature | Priorité | Complexité | Ref SPEC.md |

@@ -8,7 +8,7 @@ description: >
 human_ai_ratio: 40/60
 ---
 
-# /gtd:plan-phases $ARGUMENTS
+# /gsr:plan-phases $ARGUMENTS
 
 ## Parse arguments
 
@@ -21,9 +21,9 @@ human_ai_ratio: 40/60
 
 1. **STORY.md existe et est complété** :
    - Vérifier `docs/plan/epics/[epic-slug]/stories/[story-slug]/STORY.md` existe
-   - Si absent → "Story pas encore détaillée. Lance `/gtd:plan-story [epic]/[story]` d'abord."
+   - Si absent → "Story pas encore détaillée. Lance `/gsr:plan-story [epic]/[story]` d'abord."
    - Vérifier qu'il contient des acceptance criteria
-   - Si vide → "STORY.md existe mais est incomplet. Relance `/gtd:plan-story [epic]/[story]`."
+   - Si vide → "STORY.md existe mais est incomplet. Relance `/gsr:plan-story [epic]/[story]`."
 
 2. **Phases pas déjà générées** :
    - Vérifier si le dossier `phases/` existe dans le dossier de la story
@@ -45,7 +45,7 @@ human_ai_ratio: 40/60
 
 ## Étape 2 — Décomposition en phases (Agent)
 
-1. Spawner l'agent `gtd-planner` avec le prompt :
+1. Spawner l'agent `gsr-planner` avec le prompt :
    ```
    Mode : phases
    Session : .claude/plan-session.md
@@ -113,7 +113,7 @@ human_ai_ratio: 40/60
 
 ## Étape 4 — Génération (Agent)
 
-1. Spawner l'agent `gtd-generator` avec le prompt :
+1. Spawner l'agent `gsr-generator` avec le prompt :
    ```
    Mode : phases
    Session : .claude/plan-session.md
@@ -122,7 +122,7 @@ human_ai_ratio: 40/60
 
    Génère PLAN.md + CONTEXT.md par phase.
    Mets à jour STORY.md, EPIC.md et ROADMAP.md.
-   Charger les templates depuis .claude/gtd/plan-output.md.
+   Charger les templates depuis .claude/gsr/plan-output.md.
    Lire CLAUDE.md, architecture.md, SPEC.md pour les CONTEXT.md ciblés.
    ```
 
@@ -143,8 +143,8 @@ Ordre d'exécution :
   ...
 
 Prochaine étape :
-  Exécuter la première phase : /gtd:execute [epic]/[story]/[phase]
-  Ou planifier une autre story : /gtd:plan-story [epic]/[autre-story]
+  Exécuter la première phase : /gsr:execute [epic]/[story]/[phase]
+  Ou planifier une autre story : /gsr:plan-story [epic]/[autre-story]
 ```
 
 ## Garde-fous

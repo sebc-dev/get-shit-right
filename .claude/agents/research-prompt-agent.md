@@ -137,10 +137,10 @@ Génère 2-3 queries courtes (1-6 mots chacune) :
 ### Étape 4 — Logique par type de déclencheur
 
 **Mode discovery :**
-Lis la section `<trigger-types>` dans `.claude/gtd/discovery-research.md` pour obtenir les angles `<content>` et le format `<output>` spécifiques à chaque type.
+Lis la section `<trigger-types>` dans `.claude/gsr/discovery-research.md` pour obtenir les angles `<content>` et le format `<output>` spécifiques à chaque type.
 
 **Mode planification :**
-Lis la section `<trigger-types>` dans `.claude/gtd/plan-research.md` pour obtenir les angles `<content>` et le format `<output>` spécifiques à chaque type.
+Lis la section `<trigger-types>` dans `.claude/gsr/plan-research.md` pour obtenir les angles `<content>` et le format `<output>` spécifiques à chaque type.
 
 En mode planification, adapter le `<context>` :
 - Inclure la stack validée (pas en cours de discussion)

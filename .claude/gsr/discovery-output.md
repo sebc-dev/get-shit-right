@@ -175,12 +175,12 @@ Status: [✅ On track | ⚠️ Approaching limit]
 |---------|--------|--------|
 
 ## Bootstrap Ready
-Command: /gtd:bootstrap docs/discovery.md
+Command: /gsr:bootstrap docs/discovery.md
 Prerequisites: [ce qui sera généré]
 Next step: /prd --from-discovery (si > 5 features MVP)
 
 ## Resume Command
-/gtd:discover-resume
+/gsr:discover-resume
 ```
 </session-template>
 
@@ -354,7 +354,7 @@ Accepté — [date]
 
 ### Syntaxe
 ```
-/gtd:bootstrap [path/to/discovery.md]
+/gsr:bootstrap [path/to/discovery.md]
 ```
 
 **Flags optionnels :**
@@ -368,7 +368,7 @@ Accepté — [date]
 
 1. **Parse** discovery.md → extraction structurée des 7 sections
 2. **Valide** que discovery.md est complet (7 sections présentes)
-   - Si incomplet → "Discovery incomplète ([sections manquantes]). Lance `/gtd:discover-resume` pour compléter."
+   - Si incomplet → "Discovery incomplète ([sections manquantes]). Lance `/gsr:discover-resume` pour compléter."
 3. **Évalue** si ADR nécessaire (voir conditions dans `<adr-template>`)
 4. **Génère** la structure de fichiers :
 

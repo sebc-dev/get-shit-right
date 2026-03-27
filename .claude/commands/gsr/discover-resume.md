@@ -4,12 +4,12 @@ description: Resume an interrupted discovery session, detect pending Deep Resear
 human_ai_ratio: 60/40
 ---
 
-# /gtd:discover-resume
+# /gsr:discover-resume
 
 ## Pré-checks
 
 1. Vérifier si `.claude/discovery-session.md` existe :
-   - Si non → "Aucune session discovery en cours. Lance `/gtd:discover \"description\"` pour en démarrer une."
+   - Si non → "Aucune session discovery en cours. Lance `/gsr:discover \"description\"` pour en démarrer une."
    - Si oui → continuer
 
 2. Lire la session et extraire : projet, phase courante, prochaine phase, durée écoulée, recherches pending
@@ -26,9 +26,9 @@ Temps écoulé : ~[N] min
 Reprendre ? [Oui] [Non, nouvelle session] [Abandonner]
 ```
 
-- **Oui** → charger la section XML de la prochaine phase depuis `.claude/gtd/discovery-phases.md` → continuer depuis la phase suivante
-- **Non, nouvelle session** → archiver la session (ajouter suffixe timestamp), lancer `/gtd:discover`
-- **Abandonner** → basculer vers le flow `/gtd:discover-abort`
+- **Oui** → charger la section XML de la prochaine phase depuis `.claude/gsr/discovery-phases.md` → continuer depuis la phase suivante
+- **Non, nouvelle session** → archiver la session (ajouter suffixe timestamp), lancer `/gsr:discover`
+- **Abandonner** → basculer vers le flow `/gsr:discover-abort`
 
 ## Reprise avec recherche Deep pending
 
@@ -49,4 +49,4 @@ Tu as les résultats ?
 
 ## Après reprise
 
-Charger la section XML correspondant à la phase en cours depuis `.claude/gtd/discovery-phases.md`. Reprendre le flow exactement où il s'était arrêté, avec le contexte capturé dans la session.
+Charger la section XML correspondant à la phase en cours depuis `.claude/gsr/discovery-phases.md`. Reprendre le flow exactement où il s'était arrêté, avec le contexte capturé dans la session.

@@ -157,7 +157,7 @@ Options :
    1. Copie le contenu de .claude/research-prompt.md
    2. Colle-le dans Claude Desktop (claude.ai) en mode Deep Research
    3. Attends le résultat (~15-30 min)
-   4. Reviens ici et lance /gtd:plan-story --resume ou /gtd:plan-phases --resume
+   4. Reviens ici et lance /gsr:plan-story --resume ou /gsr:plan-phases --resume
 
    La session est sauvegardée. Tu peux fermer cette conversation.
    ```

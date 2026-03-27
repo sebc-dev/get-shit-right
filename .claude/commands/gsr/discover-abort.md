@@ -4,7 +4,7 @@ description: Abort discovery session, delete session file
 human_ai_ratio: 80/20
 ---
 
-# /gtd:discover-abort
+# /gsr:discover-abort
 
 ## Pré-checks
 
@@ -26,5 +26,5 @@ Supprimer cette session ? Aucun discovery.md ne sera généré.
 ```
 
 - **Oui, supprimer** → supprimer `.claude/discovery-session.md` et `.claude/research-prompt.md` (si existe) → "Session supprimée."
-- **Non, reprendre** → basculer vers `/gtd:discover-resume`
-- **Sauvegarder un partiel** → basculer vers `/gtd:discover-save`
+- **Non, reprendre** → basculer vers `/gsr:discover-resume`
+- **Sauvegarder un partiel** → basculer vers `/gsr:discover-save`

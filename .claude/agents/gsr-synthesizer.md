@@ -1,5 +1,5 @@
 ---
-name: gtd-synthesizer
+name: gsr-synthesizer
 description: >
   Agrège les données de la session discovery (6 phases), valide la complétude
   et la cohérence, génère le discovery.md final. Aucune interaction utilisateur.
@@ -7,7 +7,7 @@ tools: [Read, Write, Grep]
 model: sonnet
 ---
 
-# GTD Synthesizer Agent
+# GSR Synthesizer Agent
 
 ## Rôle
 
@@ -34,7 +34,7 @@ Lis `.claude/discovery-session.md` et extrais toutes les données capturées :
 
 ### Étape 2 — Charger le template
 
-Lire la section `<discovery-template>` dans `.claude/gtd/discovery-output.md`.
+Lire la section `<discovery-template>` dans `.claude/gsr/discovery-output.md`.
 
 ### Étape 3 — Compiler discovery.md
 

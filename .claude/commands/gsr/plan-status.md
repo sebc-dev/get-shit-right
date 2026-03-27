@@ -6,12 +6,12 @@ description: >
 human_ai_ratio: 10/90
 ---
 
-# /gtd:plan-status
+# /gsr:plan-status
 
 ## Pré-checks
 
 1. Vérifier si `docs/plan/ROADMAP.md` existe :
-   - Si absent → "Aucun plan trouvé. Lance `/gtd:plan` pour démarrer la planification."
+   - Si absent → "Aucun plan trouvé. Lance `/gsr:plan` pour démarrer la planification."
 
 ## Collecte d'état
 
@@ -52,7 +52,7 @@ Prochaines actions suggérées :
 ## Suggestions intelligentes
 
 Proposer la prochaine action logique selon l'état :
-- Si des stories sont `⬜` dans l'epic prioritaire → `/gtd:plan-story [epic]/[story]`
-- Si une story est `🔲` et prête pour les phases → `/gtd:plan-phases [epic]/[story]`
+- Si des stories sont `⬜` dans l'epic prioritaire → `/gsr:plan-story [epic]/[story]`
+- Si une story est `🔲` et prête pour les phases → `/gsr:plan-phases [epic]/[story]`
 - Si tout est `✅` → "Plan complet. Prêt pour l'exécution."
-- Si rien n'est planifié → `/gtd:plan` pour commencer
+- Si rien n'est planifié → `/gsr:plan` pour commencer

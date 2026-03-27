@@ -2,26 +2,26 @@
 set -euo pipefail
 
 # =============================================================================
-# GTD Workflow — Installer
-# Usage: curl -fsSL https://raw.githubusercontent.com/sebc-dev/gtd/main/install.sh | bash
+# GSR Workflow — Installer
+# Usage: curl -fsSL https://raw.githubusercontent.com/sebc-dev/gsr/main/install.sh | bash
 #
 # Options (via env vars):
-#   GTD_PHASES="discovery"    Install specific phases (comma-separated)
-#   GTD_PHASES="all"          Install all available phases (default)
-#   GTD_TARGET="/path"        Target project directory (default: current dir)
-#   GTD_BRANCH="main"         Git branch to install from (default: main)
-#   GTD_FORCE=1               Overwrite existing files without prompting
-#   GTD_DRY_RUN=1             Show what would be installed without writing
-#   GTD_LIST=1                List available phases and exit
+#   GSR_PHASES="discovery"    Install specific phases (comma-separated)
+#   GSR_PHASES="all"          Install all available phases (default)
+#   GSR_TARGET="/path"        Target project directory (default: current dir)
+#   GSR_BRANCH="main"         Git branch to install from (default: main)
+#   GSR_FORCE=1               Overwrite existing files without prompting
+#   GSR_DRY_RUN=1             Show what would be installed without writing
+#   GSR_LIST=1                List available phases and exit
 # =============================================================================
 
-REPO="sebc-dev/gtd"
-BRANCH="${GTD_BRANCH:-main}"
+REPO="sebc-dev/gsr"
+BRANCH="${GSR_BRANCH:-main}"
 BASE_URL="https://raw.githubusercontent.com/${REPO}/${BRANCH}"
-TARGET="${GTD_TARGET:-.}"
-FORCE="${GTD_FORCE:-0}"
-DRY_RUN="${GTD_DRY_RUN:-0}"
-LIST="${GTD_LIST:-0}"
+TARGET="${GSR_TARGET:-.}"
+FORCE="${GSR_FORCE:-0}"
+DRY_RUN="${GSR_DRY_RUN:-0}"
+LIST="${GSR_LIST:-0}"
 
 # --- Colors (disabled if not a terminal) ---
 if [[ -t 1 ]]; then
@@ -59,17 +59,17 @@ phase_discovery_desc() {
 
 phase_discovery_files() {
   cat <<'FILES'
-.claude/gtd/discovery-phases.md
-.claude/gtd/discovery-output.md
-.claude/gtd/discovery-research.md
-.claude/commands/gtd/discover.md
-.claude/commands/gtd/discover-resume.md
-.claude/commands/gtd/discover-abort.md
-.claude/commands/gtd/discover-save.md
-.claude/commands/gtd/bootstrap.md
+.claude/gsr/discovery-phases.md
+.claude/gsr/discovery-output.md
+.claude/gsr/discovery-research.md
+.claude/commands/gsr/discover.md
+.claude/commands/gsr/discover-resume.md
+.claude/commands/gsr/discover-abort.md
+.claude/commands/gsr/discover-save.md
+.claude/commands/gsr/bootstrap.md
 .claude/agents/research-prompt-agent.md
-.claude/agents/gtd-synthesizer.md
-.claude/agents/gtd-bootstrapper.md
+.claude/agents/gsr-synthesizer.md
+.claude/agents/gsr-bootstrapper.md
 FILES
 }
 
@@ -81,16 +81,16 @@ phase_plan_desc() {
 
 phase_plan_files() {
   cat <<'FILES'
-.claude/commands/gtd/plan.md
-.claude/commands/gtd/plan-story.md
-.claude/commands/gtd/plan-phases.md
-.claude/commands/gtd/plan-status.md
-.claude/commands/gtd/plan-abort.md
-.claude/agents/gtd-analyst.md
-.claude/agents/gtd-planner.md
-.claude/agents/gtd-generator.md
-.claude/gtd/plan-output.md
-.claude/gtd/plan-research.md
+.claude/commands/gsr/plan.md
+.claude/commands/gsr/plan-story.md
+.claude/commands/gsr/plan-phases.md
+.claude/commands/gsr/plan-status.md
+.claude/commands/gsr/plan-abort.md
+.claude/agents/gsr-analyst.md
+.claude/agents/gsr-planner.md
+.claude/agents/gsr-generator.md
+.claude/gsr/plan-output.md
+.claude/gsr/plan-research.md
 FILES
 }
 
@@ -101,7 +101,7 @@ FILES
 # =============================================================================
 
 cmd_list() {
-  echo -e "\n${C_BOLD}GTD Workflow — Available phases${C_RESET}\n"
+  echo -e "\n${C_BOLD}GSR Workflow — Available phases${C_RESET}\n"
   for phase in $AVAILABLE_PHASES; do
     local desc
     desc=$(phase_${phase}_desc)
@@ -113,7 +113,7 @@ cmd_list() {
 }
 
 cmd_install() {
-  local phases_input="${GTD_PHASES:-all}"
+  local phases_input="${GSR_PHASES:-all}"
   local phases
 
   if [[ "$phases_input" == "all" ]]; then
@@ -125,7 +125,7 @@ cmd_install() {
   # Validate phases
   for phase in $phases; do
     if ! type "phase_${phase}_files" &>/dev/null; then
-      fatal "Unknown phase: '${phase}'. Run with GTD_LIST=1 to see available phases."
+      fatal "Unknown phase: '${phase}'. Run with GSR_LIST=1 to see available phases."
     fi
   done
 
@@ -143,7 +143,7 @@ cmd_install() {
   local phase_list
   phase_list=$(echo "$phases" | tr ' ' ', ')
 
-  echo -e "\n${C_BOLD}GTD Workflow — Installer${C_RESET}"
+  echo -e "\n${C_BOLD}GSR Workflow — Installer${C_RESET}"
   echo -e "Phases:  ${C_GREEN}${phase_list}${C_RESET}"
   echo -e "Target:  ${TARGET}"
   echo -e "Files:   ${total}"
@@ -166,7 +166,7 @@ cmd_install() {
 
     # Check existing
     if [[ -f "$dest" && "$FORCE" != "1" && "$DRY_RUN" != "1" ]]; then
-      warn "Exists, skipped: ${file} (use GTD_FORCE=1 to overwrite)"
+      warn "Exists, skipped: ${file} (use GSR_FORCE=1 to overwrite)"
       skipped=$((skipped + 1))
       continue
     fi
@@ -209,16 +209,16 @@ cmd_install() {
     for phase in $phases; do
       case "$phase" in
         discovery)
-          echo "  /gtd:discover \"project description\""
-          echo "  /gtd:discover-resume"
-          echo "  /gtd:bootstrap"
+          echo "  /gsr:discover \"project description\""
+          echo "  /gsr:discover-resume"
+          echo "  /gsr:bootstrap"
           ;;
         plan)
-          echo "  /gtd:plan [path/to/SPEC.md] [--granularity=flexible]"
-          echo "  /gtd:plan-story [epic-slug/story-slug]"
-          echo "  /gtd:plan-phases [epic-slug/story-slug]"
-          echo "  /gtd:plan-status"
-          echo "  /gtd:plan-abort"
+          echo "  /gsr:plan [path/to/SPEC.md] [--granularity=flexible]"
+          echo "  /gsr:plan-story [epic-slug/story-slug]"
+          echo "  /gsr:plan-phases [epic-slug/story-slug]"
+          echo "  /gsr:plan-status"
+          echo "  /gsr:plan-abort"
           ;;
         # Future phases: add cases here
       esac

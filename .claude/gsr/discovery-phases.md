@@ -186,7 +186,7 @@ Si C → continuer le flow normal
 
 **Si Deep Research choisi :**
 1. Afficher le prompt formaté depuis `.claude/research-prompt.md`
-2. "Copie ce prompt dans Claude Desktop (Deep Research). Reviens avec `/gtd:discover-resume` quand tu as les résultats."
+2. "Copie ce prompt dans Claude Desktop (Deep Research). Reviens avec `/gsr:discover-resume` quand tu as les résultats."
 3. Sauvegarder la session avec Research Gate en état "pending"
 
 **Si recherche rapide :**
@@ -397,5 +397,5 @@ Recommandation : [OUI/NON] — [raison]
 ### Finalisation
 
 Après toutes les validations → écrire le fichier `discovery.md` dans le répertoire du projet.
-Proposer : "Discovery terminée. Lance `/gtd:bootstrap` pour générer la structure projet."
+Proposer : "Discovery terminée. Lance `/gsr:bootstrap` pour générer la structure projet."
 </phase-6-synthesis>

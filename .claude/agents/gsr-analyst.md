@@ -1,5 +1,5 @@
 ---
-name: gtd-analyst
+name: gsr-analyst
 description: >
   Analyse les documents bootstrap (SPEC.md, architecture.md, discovery.md,
   CLAUDE.md, database.md, ADR) et produit une extraction structurée dans
@@ -8,7 +8,7 @@ tools: [Read, Glob, Grep, Write]
 model: sonnet
 ---
 
-# GTD Analyst Agent
+# GSR Analyst Agent
 
 ## Rôle
 
@@ -86,7 +86,7 @@ Si incohérence détectée → documenter dans `## Alertes` avec détail et impa
 
 Créer (ou mettre à jour) `.claude/plan-session.md` avec la section `## Analyse` remplie.
 
-Format de sortie (utiliser le template `<session-template>` de `.claude/gtd/plan-output.md`) :
+Format de sortie (utiliser le template `<session-template>` de `.claude/gsr/plan-output.md`) :
 
 ```markdown
 # Plan Session

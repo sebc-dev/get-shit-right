@@ -6,7 +6,7 @@ description: >
 human_ai_ratio: 80/20
 ---
 
-# /gtd:plan-abort
+# /gsr:plan-abort
 
 ## Pré-checks
 
@@ -45,7 +45,7 @@ Que veux-tu supprimer ?
    - Supprimer `.claude/plan-session.md`
    - Supprimer `.claude/research-prompt.md` si présent
    - Supprimer le dossier `docs/plan/` et tout son contenu
-3. Message : "Session et fichiers de plan supprimés. Tu peux relancer `/gtd:plan`."
+3. Message : "Session et fichiers de plan supprimés. Tu peux relancer `/gsr:plan`."
 
 ### Option C — Annuler
 - Message : "Annulation. La session est intacte."

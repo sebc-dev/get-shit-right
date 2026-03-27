@@ -1,5 +1,5 @@
 ---
-name: gtd-generator
+name: gsr-generator
 description: >
   Génère les fichiers de sortie du plan selon le mode : roadmap (ROADMAP.md +
   EPIC.md), story (STORY.md), ou phases (PLAN.md + CONTEXT.md par phase).
@@ -8,7 +8,7 @@ tools: [Read, Write, Bash]
 model: sonnet
 ---
 
-# GTD Generator Agent
+# GSR Generator Agent
 
 ## Rôle
 
@@ -23,7 +23,7 @@ Tu reçois dans ton prompt d'invocation :
 
 ## Étape préalable — Charger les templates
 
-Lire `.claude/gtd/plan-output.md` et charger la section XML correspondant au mode :
+Lire `.claude/gsr/plan-output.md` et charger la section XML correspondant au mode :
 - `roadmap` → `<roadmap-template>` + `<epic-template>`
 - `story` → `<story-template>`
 - `phases` → `<plan-template>` + `<context-template>`
@@ -141,7 +141,7 @@ Utiliser `<context-template>`. Pour chaque phase :
 
 #### 4. Mettre à jour STORY.md
 
-Cocher `- [x] Phases planifiées (/gtd:plan-phases)`.
+Cocher `- [x] Phases planifiées (/gsr:plan-phases)`.
 
 #### 5. Mettre à jour EPIC.md
 

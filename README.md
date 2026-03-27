@@ -1,4 +1,4 @@
-# GTD — Solo Dev Workflow for Claude Code
+# GSR (Get Shit Right) — Solo Dev Workflow for Claude Code
 
 Plugin Claude Code qui structure le cycle de vie d'un projet solo : de l'idee au deploiement.
 
@@ -14,26 +14,26 @@ Plugin Claude Code qui structure le cycle de vie d'un projet solo : de l'idee au
 ## Installation
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/sebc-dev/gtd/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/sebc-dev/gsr/main/install.sh | bash
 ```
 
 ### Options
 
 ```bash
 # Projet specifique
-GTD_TARGET=/path/to/project curl -fsSL ... | bash
+GSR_TARGET=/path/to/project curl -fsSL ... | bash
 
 # Dry-run
-GTD_DRY_RUN=1 curl -fsSL ... | bash
+GSR_DRY_RUN=1 curl -fsSL ... | bash
 
 # Phase specifique
-GTD_PHASES=discovery curl -fsSL ... | bash
+GSR_PHASES=discovery curl -fsSL ... | bash
 
 # Lister les phases disponibles
-GTD_LIST=1 curl -fsSL ... | bash
+GSR_LIST=1 curl -fsSL ... | bash
 
 # Ecraser les fichiers existants
-GTD_FORCE=1 curl -fsSL ... | bash
+GSR_FORCE=1 curl -fsSL ... | bash
 ```
 
 ## Utilisation
@@ -41,21 +41,21 @@ GTD_FORCE=1 curl -fsSL ... | bash
 ### Discovery
 
 ```
-/gtd:discover "description du projet"   # Demarrer une discovery
-/gtd:discover-resume                     # Reprendre une session
-/gtd:discover-save                       # Sauvegarder un partiel
-/gtd:discover-abort                      # Abandonner
-/gtd:bootstrap [path]                    # Generer la structure projet
+/gsr:discover "description du projet"   # Demarrer une discovery
+/gsr:discover-resume                     # Reprendre une session
+/gsr:discover-save                       # Sauvegarder un partiel
+/gsr:discover-abort                      # Abandonner
+/gsr:bootstrap [path]                    # Generer la structure projet
 ```
 
 ### Plan (progressif)
 
 ```
-/gtd:plan [SPEC.md] [--granularity=flexible]   # Niveau 1 : ROADMAP (Epics + Stories)
-/gtd:plan-story [epic/story]                    # Niveau 2 : Detailler une story
-/gtd:plan-phases [epic/story]                   # Niveau 3 : Phases atomiques
-/gtd:plan-status                                # Voir la progression
-/gtd:plan-abort                                 # Annuler la session
+/gsr:plan [SPEC.md] [--granularity=flexible]   # Niveau 1 : ROADMAP (Epics + Stories)
+/gsr:plan-story [epic/story]                    # Niveau 2 : Detailler une story
+/gsr:plan-phases [epic/story]                   # Niveau 3 : Phases atomiques
+/gsr:plan-status                                # Voir la progression
+/gsr:plan-abort                                 # Annuler la session
 ```
 
 ## Architecture
@@ -64,7 +64,7 @@ Architecture **Command + Agents + References** (pattern GSD) — pas de skill-or
 
 ```
 .claude/
-├── commands/gtd/          # Slash commands (orchestrateurs legers)
+├── commands/gsr/          # Slash commands (orchestrateurs legers)
 │   ├── discover.md        # Interface conversationnelle discovery
 │   ├── discover-resume.md
 │   ├── discover-save.md
@@ -76,13 +76,13 @@ Architecture **Command + Agents + References** (pattern GSD) — pas de skill-or
 │   ├── plan-status.md
 │   └── plan-abort.md
 ├── agents/                # Agents specialises (contexte frais)
-│   ├── gtd-synthesizer.md # Phase 6 discovery : synthese + validation
-│   ├── gtd-bootstrapper.md# Bootstrap : CLAUDE.md, SPEC.md, etc.
-│   ├── gtd-analyst.md     # Plan : analyse docs bootstrap
-│   ├── gtd-planner.md     # Plan : decomposition multi-mode
-│   ├── gtd-generator.md   # Plan : generation fichiers
+│   ├── gsr-synthesizer.md # Phase 6 discovery : synthese + validation
+│   ├── gsr-bootstrapper.md# Bootstrap : CLAUDE.md, SPEC.md, etc.
+│   ├── gsr-analyst.md     # Plan : analyse docs bootstrap
+│   ├── gsr-planner.md     # Plan : decomposition multi-mode
+│   ├── gsr-generator.md   # Plan : generation fichiers
 │   └── research-prompt-agent.md  # Recherche : prompts optimises
-└── gtd/                   # References partagees (chargees par les agents)
+└── gsr/                   # References partagees (chargees par les agents)
     ├── discovery-phases.md
     ├── discovery-output.md
     ├── discovery-research.md
