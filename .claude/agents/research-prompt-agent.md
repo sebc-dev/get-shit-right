@@ -2,8 +2,9 @@
 name: research-prompt-agent
 description: >
   Generates optimized research prompts (Deep Research for Claude Desktop or
-  web search queries) from discovery session context. No user interaction.
-  Reads discovery-session.md, receives a trigger, writes research-prompt.md.
+  web search queries) from session context. Supports discovery and planning
+  modes. No user interaction. Reads session file, receives a trigger, writes
+  research-prompt.md.
 tools: Read, Grep, Glob, Write
 model: sonnet
 ---
@@ -18,17 +19,27 @@ Tu reçois un déclencheur contextuel et tu produis un fichier de sortie.
 ## Inputs attendus
 
 Tu reçois dans ton prompt d'invocation :
-1. Le chemin vers `discovery-session.md`
+1. Le chemin vers le fichier session :
+   - `.claude/discovery-session.md` (mode discovery)
+   - `.claude/plan-session.md` (mode planification)
 2. Un bloc `<research_trigger>` contenant :
-   - `type` : STACK_COMPARISON | RISK_DISCOVERY | UNKNOWN_RESOLUTION | CONSTRAINT_VALIDATION
+   - `type` : voir types par mode ci-dessous
    - `mode` : quick | deep
    - `trigger_context` : description en 1-2 phrases de ce qui a déclenché la recherche
    - `specific_question` : la question précise à résoudre (si applicable)
 
+**Types discovery :** STACK_COMPARISON | RISK_DISCOVERY | UNKNOWN_RESOLUTION | CONSTRAINT_VALIDATION
+**Types planification :** IMPLEMENTATION_PATTERN | LIBRARY_CHOICE | INTEGRATION_RISK | UNKNOWN_RESOLUTION
+
 ## Processus
 
-### Étape 1 — Lire la session
+### Étape 1 — Détecter le mode et lire la session
 
+**Détection du mode :** le chemin du fichier session détermine le mode :
+- `discovery-session.md` → mode discovery
+- `plan-session.md` → mode planification
+
+#### Mode discovery
 Lis `.claude/discovery-session.md` et extrais :
 - `project_description` : depuis la section Problem
 - `fixed_constraints` : depuis Constraints > Fixed
@@ -38,6 +49,17 @@ Lis `.claude/discovery-session.md` et extrais :
 - `architecture` : depuis Architecture (si défini)
 - `mvp_features` : depuis Scope (si défini)
 - `open_questions` : depuis Open Questions
+
+#### Mode planification
+Lis `.claude/plan-session.md` et extrais :
+- `project_description` : depuis `## Analyse > ### Features MVP` (nom du projet dans l'en-tête)
+- `fixed_constraints` : depuis `## Analyse > ### Contraintes`
+- `stack` : depuis `## Analyse > ### Stack`
+- `architecture` : depuis `## Analyse > ### Composants architecturaux`
+- `mvp_features` : depuis `## Analyse > ### Features MVP`
+- `risks` : depuis `## Analyse > ### Risques identifiés`
+- `current_level` : depuis l'en-tête `Level:`
+- `current_context` : depuis `## Story en cours` ou `## Phases en cours`
 
 ### Étape 2 — Déterminer le domaine de sources
 
@@ -114,7 +136,20 @@ Génère 2-3 queries courtes (1-6 mots chacune) :
 
 ### Étape 4 — Logique par type de déclencheur
 
+**Mode discovery :**
 Lis la section `<trigger-types>` dans `.claude/skills/gtd-discovery/discovery-research.md` pour obtenir les angles `<content>` et le format `<output>` spécifiques à chaque type.
+
+**Mode planification :**
+Lis la section `<trigger-types>` dans `.claude/gtd/plan-research.md` pour obtenir les angles `<content>` et le format `<output>` spécifiques à chaque type.
+
+En mode planification, adapter le `<context>` :
+- Inclure la stack validée (pas en cours de discussion)
+- Inclure l'architecture définie
+- Inclure les features MVP
+- Si niveau 2 (story) : inclure le contexte de la story en cours
+- Si niveau 3 (phases) : inclure le contexte des phases en cours
+
+Le `<output>` en mode planification doit toujours demander l'impact sur la décomposition en phases/stories.
 
 ### Étape 5 — Écrire le fichier de sortie
 

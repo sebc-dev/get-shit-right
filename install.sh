@@ -49,7 +49,7 @@ fatal() { err "$@"; exit 1; }
 # Only files under .claude/ are supported (minus settings.json).
 # =============================================================================
 
-AVAILABLE_PHASES="discovery"
+AVAILABLE_PHASES="discovery plan"
 
 # --- Discovery phase ---
 
@@ -72,23 +72,28 @@ phase_discovery_files() {
 FILES
 }
 
+# --- Plan phase ---
+
+phase_plan_desc() {
+  echo "Progressive planning: bootstrap docs → Epics → Stories → atomic Phases (JIT)"
+}
+
+phase_plan_files() {
+  cat <<'FILES'
+.claude/commands/gtd/plan.md
+.claude/commands/gtd/plan-story.md
+.claude/commands/gtd/plan-phases.md
+.claude/commands/gtd/plan-status.md
+.claude/commands/gtd/plan-abort.md
+.claude/agents/gtd-analyst.md
+.claude/agents/gtd-planner.md
+.claude/agents/gtd-generator.md
+.claude/gtd/plan-output.md
+.claude/gtd/plan-research.md
+FILES
+}
+
 # --- (Future phases go here) ---
-# Example:
-#
-# AVAILABLE_PHASES="discovery plan"
-#
-# phase_plan_desc() {
-#   echo "Transform epics into executable phases with dependency graph"
-# }
-#
-# phase_plan_files() {
-#   cat <<'FILES'
-# .claude/skills/gtd-plan/plan.md
-# .claude/skills/gtd-plan/plan-phases.md
-# .claude/commands/gtd/wf-plan.md
-# .claude/agents/planner.md
-# FILES
-# }
 
 # =============================================================================
 # Commands
@@ -206,6 +211,13 @@ cmd_install() {
           echo "  /gtd:discover \"project description\""
           echo "  /gtd:discover-resume"
           echo "  /gtd:bootstrap"
+          ;;
+        plan)
+          echo "  /gtd:plan [path/to/SPEC.md] [--granularity=flexible]"
+          echo "  /gtd:plan-story [epic-slug/story-slug]"
+          echo "  /gtd:plan-phases [epic-slug/story-slug]"
+          echo "  /gtd:plan-status"
+          echo "  /gtd:plan-abort"
           ;;
         # Future phases: add cases here
       esac
