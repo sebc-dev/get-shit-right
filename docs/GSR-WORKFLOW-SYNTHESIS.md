@@ -1,7 +1,7 @@
 # GSR (Get Shit Right) Workflow — Synthese Complete
 
 **Version :** 2026-03-28
-**Repo :** github.com/sebc-dev/gsr
+**Repo :** github.com/sebc-dev/get-shit-right
 **Architecture :** Command + Agents + References (pattern GSD)
 
 ---
@@ -740,7 +740,7 @@ Les sessions persistent entre les `/clear` et les interruptions. Elles permetten
 
 ```bash
 # Tout installer
-curl -fsSL https://raw.githubusercontent.com/sebc-dev/gsr/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/sebc-dev/get-shit-right/main/install.sh | bash
 
 # Phase specifique
 GSR_PHASES=discovery curl -fsSL ... | bash

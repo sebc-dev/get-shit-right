@@ -16,7 +16,7 @@ human_ai_ratio: 10/90
 ## Verifier la derniere version
 
 1. Recuperer la version distante via web fetch :
-   - URL : `https://raw.githubusercontent.com/sebc-dev/gsr/main/VERSION`
+   - URL : `https://raw.githubusercontent.com/sebc-dev/get-shit-right/main/VERSION`
    - Si echec reseau → afficher la version locale avec "(impossible de verifier les mises a jour)"
 
 2. Comparer les versions (semver) :
@@ -32,5 +32,5 @@ GSR (Get Shit Right) v[locale]
 Derniere version : v[distante]
 Statut : [A jour | Mise a jour disponible → /gsr:update | Erreur reseau]
 
-Repo : https://github.com/sebc-dev/gsr
+Repo : https://github.com/sebc-dev/get-shit-right
 ```

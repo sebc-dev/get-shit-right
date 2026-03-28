@@ -17,10 +17,10 @@ human_ai_ratio: 20/80
 ## Etape 1 — Verifier les versions
 
 1. Lire la version locale depuis `.claude/gsr/VERSION`
-   - Si absent → "Aucune version installee. Utilise `curl -fsSL https://raw.githubusercontent.com/sebc-dev/gsr/main/install.sh | bash` pour installer."
+   - Si absent → "Aucune version installee. Utilise `curl -fsSL https://raw.githubusercontent.com/sebc-dev/get-shit-right/main/install.sh | bash` pour installer."
 
 2. Recuperer la version distante :
-   - URL : `https://raw.githubusercontent.com/sebc-dev/gsr/main/VERSION`
+   - URL : `https://raw.githubusercontent.com/sebc-dev/get-shit-right/main/VERSION`
    - Si echec → "Impossible de contacter GitHub. Verifie ta connexion."
 
 3. Comparer :
@@ -33,6 +33,7 @@ Scanner les fichiers presents dans `.claude/` pour determiner quelles phases son
 
 - Si `.claude/commands/gsr/discover.md` existe → phase `discovery` installee
 - Si `.claude/commands/gsr/plan.md` existe → phase `plan` installee
+- Si `.claude/commands/gsr/execute.md` existe → phase `execute` installee
 
 Afficher :
 ```
@@ -44,14 +45,14 @@ Fichiers a mettre a jour : [N]
 [Continuer] [Annuler] [Voir les changements sur GitHub]
 ```
 
-Si "Voir les changements" → afficher le lien `https://github.com/sebc-dev/gsr/compare/v[locale]...v[distante]`
+Si "Voir les changements" → afficher le lien `https://github.com/sebc-dev/get-shit-right/compare/v[locale]...v[distante]`
 
 ## Etape 3 — Telecharger et installer
 
 Pour chaque phase installee, executer dans le terminal :
 
 ```bash
-GSR_PHASES="[phases]" GSR_FORCE=1 bash -c "$(curl -fsSL https://raw.githubusercontent.com/sebc-dev/gsr/main/install.sh)"
+GSR_PHASES="[phases]" GSR_FORCE=1 bash -c "$(curl -fsSL https://raw.githubusercontent.com/sebc-dev/get-shit-right/main/install.sh)"
 ```
 
 Si `--dry-run` → ajouter `GSR_DRY_RUN=1`
@@ -66,5 +67,5 @@ Si `--dry-run` → ajouter `GSR_DRY_RUN=1`
    Phases mises a jour : [liste]
    Fichiers : [N] installes
 
-   Changelog : https://github.com/sebc-dev/gsr/compare/v[ancienne]...v[nouvelle]
+   Changelog : https://github.com/sebc-dev/get-shit-right/compare/v[ancienne]...v[nouvelle]
    ```

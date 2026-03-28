@@ -5,7 +5,7 @@ set -euo pipefail
 # GSR Workflow — Migration Script
 # Migrates from old skill-based GTD architecture to new Command+Agents+References GSR
 #
-# Usage: curl -fsSL https://raw.githubusercontent.com/sebc-dev/gsr/main/migrate.sh | bash
+# Usage: curl -fsSL https://raw.githubusercontent.com/sebc-dev/get-shit-right/main/migrate.sh | bash
 #   or:  bash migrate.sh [target_dir]
 #
 # Options (via env vars):
@@ -28,7 +28,7 @@ TARGET="${GSR_TARGET:-${1:-.}}"
 BRANCH="${GSR_BRANCH:-main}"
 DRY_RUN="${GSR_DRY_RUN:-0}"
 
-REPO="sebc-dev/gsr"
+REPO="sebc-dev/get-shit-right"
 BASE_URL="https://raw.githubusercontent.com/${REPO}/${BRANCH}"
 
 # --- Colors ---

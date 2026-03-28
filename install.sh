@@ -3,7 +3,7 @@ set -euo pipefail
 
 # =============================================================================
 # GSR Workflow — Installer
-# Usage: curl -fsSL https://raw.githubusercontent.com/sebc-dev/gsr/main/install.sh | bash
+# Usage: curl -fsSL https://raw.githubusercontent.com/sebc-dev/get-shit-right/main/install.sh | bash
 #
 # Options (via env vars):
 #   GSR_PHASES="discovery"    Install specific phases (comma-separated)
@@ -15,7 +15,7 @@ set -euo pipefail
 #   GSR_LIST=1                List available phases and exit
 # =============================================================================
 
-REPO="sebc-dev/gsr"
+REPO="sebc-dev/get-shit-right"
 BRANCH="${GSR_BRANCH:-main}"
 BASE_URL="https://raw.githubusercontent.com/${REPO}/${BRANCH}"
 TARGET="${GSR_TARGET:-.}"
@@ -49,7 +49,7 @@ fatal() { err "$@"; exit 1; }
 # Only files under .claude/ are supported (minus settings.json).
 # =============================================================================
 
-AVAILABLE_PHASES="config discovery plan"
+AVAILABLE_PHASES="config discovery plan execute"
 
 # --- Config phase (always installed) ---
 
@@ -106,6 +106,28 @@ phase_plan_files() {
 .claude/agents/gsr/gsr-generator.md
 .claude/gsr/plan-output.md
 .claude/gsr/plan-research.md
+FILES
+}
+
+# --- Execute phase ---
+
+phase_execute_desc() {
+  echo "Autonomous execution: agents (executor, reviewer, debugger), quality gates, review"
+}
+
+phase_execute_files() {
+  cat <<'FILES'
+.claude/commands/gsr/execute.md
+.claude/commands/gsr/execute-phase.md
+.claude/agents/gsr/gsr-executor.md
+.claude/agents/gsr/gsr-reviewer.md
+.claude/agents/gsr/gsr-debugger.md
+.claude/gsr/execute-deviation.md
+.claude/gsr/execute-quality.md
+.claude/gsr/execute-review.md
+.claude/gsr/execute-output.md
+.claude/gsr/execute-session.md
+.claude/gsr/status-output.md
 FILES
 }
 
@@ -263,6 +285,10 @@ cmd_install() {
           echo "  /gsr:plan-phases [epic-slug/story-slug]"
           echo "  /gsr:plan-status"
           echo "  /gsr:plan-abort"
+          ;;
+        execute)
+          echo "  /gsr:execute [epic-slug/story-slug]               Execute a full story"
+          echo "  /gsr:execute-phase [epic/story/phase]             Execute a single phase"
           ;;
         # Future phases: add cases here
       esac

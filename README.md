@@ -14,7 +14,7 @@ Plugin Claude Code qui structure le cycle de vie d'un projet solo : de l'idee au
 ## Installation
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/sebc-dev/gsr/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/sebc-dev/get-shit-right/main/install.sh | bash
 ```
 
 ### Options
@@ -86,13 +86,13 @@ Si vous avez installe l'ancienne version (skill-based / GTD), utilisez le script
 
 ```bash
 # Dry-run d'abord
-GSR_DRY_RUN=1 curl -fsSL https://raw.githubusercontent.com/sebc-dev/gsr/main/migrate.sh | bash
+GSR_DRY_RUN=1 curl -fsSL https://raw.githubusercontent.com/sebc-dev/get-shit-right/main/migrate.sh | bash
 
 # Migration reelle
-curl -fsSL https://raw.githubusercontent.com/sebc-dev/gsr/main/migrate.sh | bash
+curl -fsSL https://raw.githubusercontent.com/sebc-dev/get-shit-right/main/migrate.sh | bash
 
 # Projet specifique
-curl -fsSL https://raw.githubusercontent.com/sebc-dev/gsr/main/migrate.sh | GSR_TARGET=/path/to/project bash
+curl -fsSL https://raw.githubusercontent.com/sebc-dev/get-shit-right/main/migrate.sh | GSR_TARGET=/path/to/project bash
 ```
 
 Le script supprime les anciens fichiers (`.claude/skills/`, `.claude/commands/gtd/`, `.claude/gtd/`, agents a la racine) puis reinstalle GSR proprement. Les fichiers projet (`discovery.md`, `docs/`, `CLAUDE.md`) sont preserves.
