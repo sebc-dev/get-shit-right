@@ -1,6 +1,6 @@
 # GSR (Get Shit Right) Workflow — Synthese Complete
 
-**Version :** 2026-03-27
+**Version :** 2026-03-28
 **Repo :** github.com/sebc-dev/gsr
 **Architecture :** Command + Agents + References (pattern GSD)
 
@@ -39,6 +39,7 @@ GSR est un plugin Claude Code qui structure le cycle de vie d'un projet solo dev
 
 | Phase | Statut | Commands | Agents | References |
 |-------|--------|----------|--------|------------|
+| Config | Done | 2 (settings, set-profile) | — | 2 (config-defaults, gsr-config.sh) |
 | Discovery | Done | 5 | 3 | 3 |
 | Plan | Done | 5 | 3 (+1 partage) | 2 |
 | Suivi | Done | 1 (status) | — | 1 (status-output) |
@@ -51,7 +52,9 @@ GSR est un plugin Claude Code qui structure le cycle de vie d'un projet solo dev
 
 ```
 .claude/
-├── commands/gsr/                    # Slash commands (13 total)
+├── commands/gsr/                    # Slash commands (15 total)
+│   ├── settings.md                  # Configuration interactive
+│   ├── set-profile.md               # Switch profil modeles (quality/balanced/budget)
 │   ├── discover.md                  # Interface conversationnelle discovery
 │   ├── discover-resume.md           # Reprendre session interrompue
 │   ├── discover-save.md             # Sauvegarder discovery partiel
@@ -66,7 +69,7 @@ GSR est un plugin Claude Code qui structure le cycle de vie d'un projet solo dev
 │   ├── version.md                   # Version installee
 │   └── update.md                    # Mise a jour depuis GitHub
 │
-├── agents/                          # Agents specialises (6 total)
+├── agents/gsr/                      # Agents specialises (6 total)
 │   ├── research-prompt-agent.md     # Prompts de recherche (discovery + plan)
 │   ├── gsr-synthesizer.md           # Phase 6 discovery : synthese + validation
 │   ├── gsr-bootstrapper.md          # Bootstrap : CLAUDE.md, SPEC.md, etc.
@@ -74,7 +77,10 @@ GSR est un plugin Claude Code qui structure le cycle de vie d'un projet solo dev
 │   ├── gsr-planner.md               # Plan : decomposition multi-mode
 │   └── gsr-generator.md             # Plan : generation fichiers multi-mode
 │
-└── gsr/                             # References partagees (6 total)
+└── gsr/                             # References + config (8 total)
+    ├── config-defaults.json         # Valeurs par defaut (commite dans le repo)
+    ├── config.json                  # Config projet (runtime, non commite)
+    ├── bin/gsr-config.sh            # Utilitaire config (ensure, scan, get, set, dump)
     ├── discovery-phases.md          # 6 phases interview (sections XML)
     ├── discovery-output.md          # Templates discovery.md, session, SPEC, etc.
     ├── discovery-research.md        # Research Gates discovery
@@ -85,13 +91,106 @@ GSR est un plugin Claude Code qui structure le cycle de vie d'un projet solo dev
 
 ---
 
-## 3. Phase Discovery
+## 3. Systeme de configuration
 
 ### 3.1 Objectif
 
+Centraliser les preferences (modeles, garde-fous, workflow, git) dans un fichier `config.json` lu par toutes les commands. Supporte deux modes : `jq` (CLI complet) et `claude` (fallback via Read/Write de Claude Code).
+
+### 3.2 Fichiers
+
+| Fichier | Role | Commite |
+|---------|------|---------|
+| `.claude/gsr/config-defaults.json` | Valeurs par defaut, reference du schema | Oui |
+| `.claude/gsr/config.json` | Config projet (cree au premier run) | Non |
+| `.claude/gsr/bin/gsr-config.sh` | Utilitaire bash (8 sous-commandes) | Oui |
+
+### 3.3 Sections de config
+
+```json
+{
+  "version": "1.0.0",
+  "environment": { },      // Resultat du scan (jq, gh/glab, MCP, auth)
+  "models": { },            // Profil actif + overrides par agent
+  "git": { },               // Provider, branching, conventional commits
+  "workflow": { },           // Mode, granularite, limites discovery/plan/research
+  "output": { }              // CLAUDE.md max lignes, format spec/plan
+}
+```
+
+### 3.4 Scan d'environnement
+
+Execute a l'installation (`install.sh`) et a la demande (`/gsr:settings`). Detecte :
+
+| Element | Detection | Stocke dans |
+|---------|-----------|-------------|
+| `jq` | `command -v jq` | `environment.jq_available`, `environment.config_mode` |
+| Git CLI | `command -v gh` / `command -v glab` | `environment.git_cli`, `environment.git_provider` |
+| Git CLI auth | `gh auth status` / `glab auth status` | `environment.git_cli_authenticated` |
+| Git MCP | Scan `.claude/settings.json` et `~/.claude/settings.json` | `environment.git_mcp`, `environment.git_mcp_authenticated` |
+
+### 3.5 Profils de modeles
+
+3 profils predefinis qui mappent chaque role d'agent a un modele :
+
+| Profil | orchestrator | worker | generator |
+|--------|-------------|--------|-----------|
+| `quality` | opus | opus | sonnet |
+| `balanced` (defaut) | opus | sonnet | sonnet |
+| `budget` | sonnet | sonnet | haiku |
+
+Mapping agent → role :
+
+| Agent | Role |
+|-------|------|
+| gsr-planner | orchestrator |
+| gsr-analyst | worker |
+| gsr-synthesizer | worker |
+| research-prompt-agent | worker |
+| gsr-generator | generator |
+| gsr-bootstrapper | generator |
+
+`/gsr:set-profile` change le profil et modifie directement le `model:` dans le frontmatter YAML de chaque agent. Les overrides par agent (`models.overrides.<agent>`) sont prioritaires.
+
+### 3.6 Injection dans les commands
+
+Toutes les commands workflow (discover, bootstrap, plan, plan-story, plan-phases) chargent la config en section "0. Charger la configuration" :
+
+1. `gsr-config.sh dump <section>` (mode jq) ou Read config.json (mode claude)
+2. Les garde-fous deviennent dynamiques (avec fallback sur les valeurs par defaut)
+3. Les agents recoivent un bloc `<config>` dans leur prompt d'invocation
+
+**Principe :** la command lit la config, l'agent ne touche jamais au fichier config.
+
+### 3.7 Utilitaire gsr-config.sh
+
+| Commande | Description |
+|----------|-------------|
+| `ensure` | Cree config.json depuis defaults si absent |
+| `scan` | Scanne l'environnement (jq, git CLI, MCP, auth) |
+| `get <key>` | Lit une valeur (requiert jq) |
+| `set <key> <value>` | Ecrit une valeur avec validation (requiert jq) |
+| `dump <section>` | Dump une section en key=value (1 appel) |
+| `resolve-model <agent>` | Modele effectif (profil + overrides) |
+| `profile` | Nom du profil actif |
+| `config-mode` | `jq` ou `claude` |
+
+### 3.8 Commands de configuration
+
+| Command | Role |
+|---------|------|
+| `/gsr:settings` | Affiche toute la config groupee par categorie, permet modification en langage naturel |
+| `/gsr:set-profile <profil>` | Switch rapide quality/balanced/budget, modifie les frontmatters agents |
+
+---
+
+## 4. Phase Discovery
+
+### 4.1 Objectif
+
 Cadrer un projet avant d'ecrire du code via une interview structuree en 6 phases. Produit un `discovery.md` exploitable pour le developpement.
 
-### 3.2 Flow
+### 4.2 Flow
 
 ```
 /gsr:discover "description"
@@ -132,7 +231,7 @@ Cadrer un projet avant d'ecrire du code via une interview structuree en 6 phases
 └─ Command presente le resultat → utilisateur valide
 ```
 
-### 3.3 Regles de conversation
+### 4.3 Regles de conversation
 
 | Regle | Description |
 |-------|-------------|
@@ -142,18 +241,19 @@ Cadrer un projet avant d'ecrire du code via une interview structuree en 6 phases
 | Proposer, ne pas imposer | "Je suggere [X]. Qu'en penses-tu ?" |
 | Acquittement minimal | Si reco ignoree → "Compris, on continue." |
 
-### 3.4 Garde-fous
+### 4.4 Garde-fous (configurables via `config.json`)
 
-| Limite | Valeur | Comportement |
-|--------|--------|-------------|
-| Questions par phase | 5 max | "On tourne en rond. Passons." |
-| Retours par phase | 3 max | "3eme retour. Je resume et on avance." |
-| Cycles validation | 3 max | "Validation bloquee. Generation avec warnings." |
-| Total interview | ~30 echanges | Proposition de sauvegarde |
-| Duree | < 45 min | "On approche des 45 min." |
-| Recherches | 3 deep + 5 quick | "Continuons avec ce qu'on a." |
+| Limite | Cle config | Defaut | Comportement |
+|--------|-----------|--------|-------------|
+| Questions par phase | `workflow.discovery.max_questions_per_phase` | 5 | "On tourne en rond. Passons." |
+| Retours par phase | `workflow.discovery.max_returns_per_phase` | 3 | "3eme retour. Je resume et on avance." |
+| Cycles validation | `workflow.discovery.max_returns_per_phase` | 3 | "Validation bloquee. Generation avec warnings." |
+| Total interview | `workflow.discovery.max_interview_exchanges` | 30 | Proposition de sauvegarde |
+| Duree | `workflow.discovery.timeout_minutes` | 45 min | "On approche des N min." |
+| Recherches deep | `workflow.research.max_deep` | 3 | "Continuons avec ce qu'on a." |
+| Recherches quick | `workflow.research.max_quick` | 5 | "Continuons avec ce qu'on a." |
 
-### 3.5 Challenges proactifs
+### 4.5 Challenges proactifs
 
 | Signal | Challenge |
 |--------|-----------|
@@ -163,7 +263,7 @@ Cadrer un projet avant d'ecrire du code via une interview structuree en 6 phases
 | Contrainte floue | "Tu dis 'performant'. C'est quoi le seuil ?" |
 | Risque nie | "Vraiment aucun risque ? Meme [suggestion] ?" |
 
-### 3.6 Research Gates (Discovery)
+### 4.6 Research Gates (Discovery)
 
 4 types de declencheurs :
 
@@ -179,7 +279,7 @@ Cadrer un projet avant d'ecrire du code via une interview structuree en 6 phases
 - [B] Deep Research (~15-30min) → prompt pour Claude Desktop
 - [C] Continuer sans recherche
 
-### 3.7 Output : discovery.md (7 sections)
+### 4.7 Output : discovery.md (7 sections)
 
 ```
 ## §1 Probleme         → Statement, cible, situation, motivation
@@ -191,7 +291,7 @@ Cadrer un projet avant d'ecrire du code via une interview structuree en 6 phases
 ## §7 Risques          → Risque, probabilite, impact, mitigation
 ```
 
-### 3.8 Session management
+### 4.8 Session management
 
 Fichier : `.claude/discovery-session.md` (auto-genere)
 
@@ -199,13 +299,13 @@ Contient : phase courante, donnees capturees, questions ouvertes, research log, 
 
 ---
 
-## 4. Phase Bootstrap
+## 5. Phase Bootstrap
 
-### 4.1 Objectif
+### 5.1 Objectif
 
 Generer la structure projet a partir du `discovery.md` valide.
 
-### 4.2 Flow
+### 5.2 Flow
 
 ```
 /gsr:bootstrap [discovery.md] [--dry-run] [--no-adr] [--minimal]
@@ -224,7 +324,7 @@ Generer la structure projet a partir du `discovery.md` valide.
     └─ Met a jour .claude/settings.json (permissions)
 ```
 
-### 4.3 Fichiers generes
+### 5.3 Fichiers generes
 
 | Fichier | Condition | Source |
 |---------|-----------|--------|
@@ -237,9 +337,9 @@ Generer la structure projet a partir du `discovery.md` valide.
 
 ---
 
-## 5. Phase Plan (Progressive / JIT)
+## 6. Phase Plan (Progressive / JIT)
 
-### 5.1 Concept cle
+### 6.1 Concept cle
 
 La planification est **progressive** — on ne planifie pas tout d'un coup :
 
@@ -267,7 +367,7 @@ Temps ────────────────────────�
 - La review humaine est plus efficace sur un scope reduit
 - On integre les apprentissages des phases precedentes
 
-### 5.2 Hierarchie Epic → Story → Phase
+### 6.2 Hierarchie Epic → Story → Phase
 
 | Niveau | Definition | Planifie quand | Command |
 |--------|-----------|----------------|---------|
@@ -275,7 +375,7 @@ Temps ────────────────────────�
 | **Story** | User story avec acceptance criteria (Given-When-Then) | Quand on attaque l'epic | `/gsr:plan-story` |
 | **Phase** | Unite atomique, reviewable, increment fonctionnel | Juste avant execution | `/gsr:plan-phases` |
 
-### 5.3 Niveaux de granularite (appliques aux phases)
+### 6.3 Niveaux de granularite (appliques aux phases)
 
 | Niveau | Taille phase | Cas d'usage |
 |--------|-------------|-------------|
@@ -283,7 +383,7 @@ Temps ────────────────────────�
 | `standard` | 2-4h Claude | Bon equilibre atomicite/productivite |
 | `flexible` | Variable | Adapte a la complexite (defaut) |
 
-### 5.4 Flow Niveau 1 — /gsr:plan
+### 6.4 Flow Niveau 1 — /gsr:plan
 
 ```
 /gsr:plan [SPEC.md] [--granularity=flexible]
@@ -307,7 +407,7 @@ Temps ────────────────────────�
 └─ Resume : "N epics, N stories. → /gsr:plan-story ..."
 ```
 
-### 5.5 Flow Niveau 2 — /gsr:plan-story
+### 6.5 Flow Niveau 2 — /gsr:plan-story
 
 ```
 /gsr:plan-story [epic-slug/story-slug]
@@ -326,7 +426,7 @@ Temps ────────────────────────�
 └─ "Story detaillee. → /gsr:plan-phases ..."
 ```
 
-### 5.6 Flow Niveau 3 — /gsr:plan-phases
+### 6.6 Flow Niveau 3 — /gsr:plan-phases
 
 ```
 /gsr:plan-phases [epic-slug/story-slug] [--granularity=flexible]
@@ -345,7 +445,7 @@ Temps ────────────────────────�
 └─ "N phases generees. → /gsr:execute ..."
 ```
 
-### 5.7 Artefacts generes
+### 6.7 Artefacts generes
 
 ```
 docs/plan/
@@ -367,7 +467,7 @@ docs/plan/
 
 L'arborescence se construit progressivement — seuls les niveaux planifies existent.
 
-### 5.8 Format PLAN.md (par phase)
+### 6.8 Format PLAN.md (par phase)
 
 ```xml
 <phase id="[NN]" name="[slug]" epic="[epic]" story="[story]" depends="[ids]">
@@ -393,7 +493,7 @@ L'arborescence se construit progressivement — seuls les niveaux planifies exis
 </phase>
 ```
 
-### 5.9 Format CONTEXT.md (par phase)
+### 6.9 Format CONTEXT.md (par phase)
 
 Contient uniquement le contexte pertinent pour cette phase :
 - Objectif (1-2 phrases)
@@ -403,7 +503,7 @@ Contient uniquement le contexte pertinent pour cette phase :
 - Dependances (output des phases precedentes)
 - Fichiers cles (a lire/creer/modifier)
 
-### 5.10 Research Gates (Plan)
+### 6.10 Research Gates (Plan)
 
 | Type | Quand | Niveaux |
 |------|-------|---------|
@@ -412,26 +512,29 @@ Contient uniquement le contexte pertinent pour cette phase :
 | INTEGRATION_RISK | Interface entre composants pas claire | 3 |
 | UNKNOWN_RESOLUTION | "Je ne sais pas" sur point structurant | Tous |
 
-### 5.11 Garde-fous (Plan)
+### 6.11 Garde-fous (configurables via `config.json`)
 
-| Limite | Valeur | Comportement |
-|--------|--------|-------------|
-| Stories par epic | 6 max | "Epic trop gros. Decouper en 2 ?" |
-| Phases par story | 8 max | "Story trop grosse. Decouper ?" |
-| Total epics | 10 max | "Projet tres ambitieux pour solo dev." |
-| Cycles review / niveau | 3 max | "On valide et ajuste plus tard." |
-| Recherches / session | 3 deep + 5 quick | "Continuons avec ce qu'on a." |
-| Duree par niveau | < 30 min | "On approche de 30 min." |
+| Limite | Cle config | Defaut | Comportement |
+|--------|-----------|--------|-------------|
+| Stories par epic | `workflow.plan.max_stories_per_epic` | 6 | "Epic trop gros. Decouper en 2 ?" |
+| Phases par story | `workflow.plan.max_phases_per_story` | 8 | "Story trop grosse. Decouper ?" |
+| Total epics | `workflow.plan.max_epics` | 10 | "Projet tres ambitieux pour solo dev." |
+| Cycles review / niveau | `workflow.plan.max_review_cycles` | 3 | "On valide et ajuste plus tard." |
+| Recherches deep | `workflow.research.max_deep` | 3 | "Continuons avec ce qu'on a." |
+| Recherches quick | `workflow.research.max_quick` | 5 | "Continuons avec ce qu'on a." |
+| Duree par niveau | `workflow.plan.timeout_minutes` | 30 min | "On approche de N min." |
 
 ---
 
-## 6. Agents — Reference
+## 7. Agents — Reference
 
-### 6.1 research-prompt-agent
+**Note :** les modeles des agents sont configurables via `/gsr:set-profile` (voir §3.5). Les valeurs ci-dessous correspondent au profil `balanced` (defaut).
+
+### 7.1 research-prompt-agent
 
 | Champ | Valeur |
 |-------|--------|
-| Model | sonnet |
+| Model | sonnet (role: worker) |
 | Tools | Read, Grep, Glob, Write |
 | Interactive | Non |
 
@@ -443,7 +546,7 @@ Contient uniquement le contexte pertinent pour cette phase :
 **Types discovery :** STACK_COMPARISON, RISK_DISCOVERY, UNKNOWN_RESOLUTION, CONSTRAINT_VALIDATION
 **Types plan :** IMPLEMENTATION_PATTERN, LIBRARY_CHOICE, INTEGRATION_RISK, UNKNOWN_RESOLUTION
 
-### 6.2 gsr-synthesizer
+### 7.2 gsr-synthesizer
 
 | Champ | Valeur |
 |-------|--------|
@@ -456,7 +559,7 @@ Contient uniquement le contexte pertinent pour cette phase :
 **Input :** `.claude/discovery-session.md`
 **Output :** `discovery.md` + resume structure (completude, coherence, auto-critique)
 
-### 6.3 gsr-bootstrapper
+### 7.3 gsr-bootstrapper
 
 | Champ | Valeur |
 |-------|--------|
@@ -469,7 +572,7 @@ Contient uniquement le contexte pertinent pour cette phase :
 **Input :** `discovery.md` + flags
 **Output :** fichiers projet + resume
 
-### 6.4 gsr-analyst
+### 7.4 gsr-analyst
 
 | Champ | Valeur |
 |-------|--------|
@@ -482,7 +585,7 @@ Contient uniquement le contexte pertinent pour cette phase :
 **Input :** chemins docs bootstrap + granularite
 **Output :** `plan-session.md` §Analyse
 
-### 6.5 gsr-planner
+### 7.5 gsr-planner
 
 | Champ | Valeur |
 |-------|--------|
@@ -500,7 +603,7 @@ Contient uniquement le contexte pertinent pour cette phase :
 
 **Adaptativite :** en modes story/phases, lit l'etat actuel du projet (code deja ecrit) pour s'adapter aux changements.
 
-### 6.6 gsr-generator
+### 7.6 gsr-generator
 
 | Champ | Valeur |
 |-------|--------|
@@ -520,9 +623,9 @@ Met a jour en cascade : chaque generation met a jour les fichiers parents (STORY
 
 ---
 
-## 7. References — Index des sections XML
+## 8. References — Index des sections XML
 
-### 7.1 discovery-phases.md
+### 8.1 discovery-phases.md
 
 | Section XML | Contenu |
 |-------------|---------|
@@ -534,7 +637,7 @@ Met a jour en cascade : chaque generation met a jour les fichiers parents (STORY
 | `<phase-5-scope>` | MVP, exclusions, risques, research gate |
 | `<phase-6-synthesis>` | Validation completude + coherence + auto-critique |
 
-### 7.2 discovery-output.md
+### 8.2 discovery-output.md
 
 | Section XML | Contenu |
 |-------------|---------|
@@ -546,14 +649,14 @@ Met a jour en cascade : chaque generation met a jour les fichiers parents (STORY
 | `<adr-template>` | Template ADR-0001 (conditionnel) |
 | `<bootstrap-logic>` | Etapes d'execution du bootstrap |
 
-### 7.3 discovery-research.md
+### 8.3 discovery-research.md
 
 | Section XML | Contenu |
 |-------------|---------|
 | `<trigger-types>` | STACK_COMPARISON, RISK_DISCOVERY, CONSTRAINT_VALIDATION, UNKNOWN_RESOLUTION — quand, content, output, queries |
 | `<integration-flow>` | Comment invoquer research-prompt-agent et integrer les resultats |
 
-### 7.4 plan-output.md
+### 8.4 plan-output.md
 
 | Section XML | Contenu |
 |-------------|---------|
@@ -564,14 +667,14 @@ Met a jour en cascade : chaque generation met a jour les fichiers parents (STORY
 | `<context-template>` | Template CONTEXT.md (extraits cibles) |
 | `<session-template>` | Template plan-session.md |
 
-### 7.5 plan-research.md
+### 8.5 plan-research.md
 
 | Section XML | Contenu |
 |-------------|---------|
 | `<trigger-types>` | IMPLEMENTATION_PATTERN, LIBRARY_CHOICE, INTEGRATION_RISK, UNKNOWN_RESOLUTION |
 | `<integration-flow>` | Meme mecanisme que discovery adapte au planning |
 
-### 7.6 status-output.md
+### 8.6 status-output.md
 
 | Section XML | Contenu |
 |-------------|---------|
@@ -585,13 +688,13 @@ Met a jour en cascade : chaque generation met a jour les fichiers parents (STORY
 
 ---
 
-## 8. Suivi d'avancement — GSR-STATUS.md
+## 9. Suivi d'avancement — GSR-STATUS.md
 
-### 8.1 Objectif
+### 9.1 Objectif
 
 Fichier persistant `docs/GSR-STATUS.md` qui donne a tout moment l'etat d'avancement du workflow. Mis a jour automatiquement par chaque commande GSR.
 
-### 8.2 Contenu
+### 9.2 Contenu
 
 - **Pipeline** : statut de chaque phase (Discovery → Bootstrap → Plan → Execute → Ship)
 - **Discovery** : phase courante, sections completees, research gates
@@ -599,7 +702,7 @@ Fichier persistant `docs/GSR-STATUS.md` qui donne a tout moment l'etat d'avancem
 - **Plan** : progression par niveau, detail par epic/story/phases
 - **Historique** : log chronologique des actions (commande + detail)
 
-### 8.3 Commandes qui mettent a jour le fichier
+### 9.3 Commandes qui mettent a jour le fichier
 
 | Commande | Action sur le suivi |
 |----------|---------------------|
@@ -614,13 +717,13 @@ Fichier persistant `docs/GSR-STATUS.md` qui donne a tout moment l'etat d'avancem
 | `/gsr:plan-abort` | Session seule ou tout supprimer |
 | `/gsr:status` | Affiche le fichier, ou le regenere avec `--rebuild` |
 
-### 8.4 Regeneration
+### 9.4 Regeneration
 
 Si le fichier est absent ou corrompu, `/gsr:status --rebuild` le reconstruit en scannant les fichiers existants du projet (discovery.md, CLAUDE.md, docs/plan/, etc.).
 
 ---
 
-## 9. Session management
+## 10. Session management
 
 Deux fichiers session independants :
 
@@ -633,7 +736,7 @@ Les sessions persistent entre les `/clear` et les interruptions. Elles permetten
 
 ---
 
-## 10. Installation
+## 11. Installation
 
 ```bash
 # Tout installer
@@ -653,9 +756,13 @@ GSR_BRANCH=dev                 # Branche git (defaut: main)
 
 Le script telecharge les fichiers depuis GitHub et les installe dans `.claude/` du projet cible.
 
+**Phases disponibles :** `config` (toujours inclus), `discovery`, `plan`
+
+**Post-installation :** le script execute automatiquement un scan d'environnement (`gsr-config.sh ensure && scan`) qui detecte `jq`, `gh`/`glab`, les MCP servers, et stocke les resultats dans `config.json`. Si `jq` est absent, un warning est affiche avec l'option de laisser Claude Code gerer la config via Read/Write.
+
 ---
 
-## 11. Prochaines etapes (Execute + Ship)
+## 12. Prochaines etapes (Execute + Ship)
 
 ### Phase Execute (a concevoir)
 
@@ -687,7 +794,7 @@ D'apres `docs/workflow.md`, la phase d'execution devrait couvrir :
 
 ---
 
-## 12. Decisions d'architecture documentees
+## 13. Decisions d'architecture documentees
 
 | Decision | Raison | Alternative rejetee |
 |----------|--------|---------------------|
@@ -699,3 +806,8 @@ D'apres `docs/workflow.md`, la phase d'execution devrait couvrir :
 | gsr-planner en model opus | Decomposition = travail cognitif lourd, meilleur resultat avec opus | Sonnet (suffisant pour generation, pas pour decomposition) |
 | 3 niveaux de granularite au choix | Flexibilite maximale pour l'utilisateur | Granularite fixe (trop rigide) |
 | Suivi persistant (GSR-STATUS.md) mis a jour par chaque commande | Consultable sans Claude Code, historique des actions, regenerable | Scan a la volee (pas d'historique, necessite Claude Code) |
+| Config centralisee (config.json + gsr-config.sh) | Garde-fous et modeles configurables sans modifier les commands/agents | Hardcoded dans chaque fichier (pas d'adaptation utilisateur) |
+| Dual mode jq/claude pour config | Zero dependance obligatoire — jq pour CLI, Read/Write pour fallback | jq obligatoire (exclut certains environnements) |
+| set-profile modifie les frontmatters agents | Modele resolu de facon deterministe avant invocation, pas pendant | Variable bash passee dynamiquement a l'agent (fragile, non-deterministe) |
+| Scan d'environnement a l'install | Detecte git CLI/MCP/auth une seule fois, stocke dans config | Re-detection a chaque command (lent, redondant) |
+| Profils de modeles (quality/balanced/budget) | Abstraction simple pour un choix cout/qualite | Configuration modele par modele (complexe pour l'utilisateur) |

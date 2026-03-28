@@ -18,7 +18,7 @@ Reference chargee par les commands GSR pour mettre a jour `docs/GSR-STATUS.md`.
 | Discovery | [statut] | [detail] |
 | Bootstrap | [statut] | [detail] |
 | Plan | [statut] | [detail] |
-| Execute | [statut] | [detail] |
+| Execute | [statut] | [detail — stories executees, phases en cours] |
 | Ship | [statut] | [detail] |
 
 ## Discovery
@@ -57,6 +57,21 @@ Reference chargee par les commands GSR pour mettre a jour `docs/GSR-STATUS.md`.
 
 | # | Epic | Stories | Detaillees | Phases | Statut |
 |---|------|---------|------------|--------|--------|
+
+## Execute
+
+| Metrique | Valeur |
+|----------|--------|
+| Stories executees | [N] / [total] |
+| Phases executees | [N] / [total] |
+| Commits | [N] |
+| Deviations | [N] |
+| Review findings | [N] (critical: [N], fixed: [N], escalated: [N]) |
+
+### Detail par Story
+
+| Epic | Story | Phases | Statut | Commits | Review |
+|------|-------|--------|--------|---------|--------|
 
 ## Historique
 
@@ -157,6 +172,41 @@ Les icones de statut a utiliser :
 - Toutes stories ont des phases → `OK`
 </update-plan-epic-statut>
 
+<update-execute-phase>
+## Mise a jour par /gsr:execute-phase
+
+### Demarrage
+- Pipeline : Execute → `En cours`
+- Phase active → `Execute`
+- Execute : incrementer Phases executees si complete
+- Detail par Story : ajouter/mettre a jour la ligne (epic, story, phases executees, statut, commits, review)
+- Historique : "Phase [epic]/[story]/[phase] executee ([N] commits, [M] findings)"
+
+### Fin
+- Execute : mettre a jour les compteurs (commits, deviations, review findings)
+- Detail par Story : Statut → selon progression (En cours / Partiel / OK)
+- Si toutes les phases de la story sont executees → Story Statut → `OK`
+</update-execute-phase>
+
+<update-execute>
+## Mise a jour par /gsr:execute
+
+### Demarrage
+- Pipeline : Execute → `En cours`
+- Phase active → `Execute`
+- Historique : "Execution story [epic]/[story] demarree"
+
+### Progression (apres chaque phase)
+- Execute : incrementer Phases executees, Commits, Deviations, Review findings
+- Detail par Story : mettre a jour la ligne
+
+### Fin
+- Execute : incrementer Stories executees
+- Detail par Story : Statut → `OK`
+- Si toutes stories de tous epics executees → Pipeline Execute → `OK`
+- Historique : "Story [epic]/[story] executee ([N] phases, [M] commits)"
+</update-execute>
+
 <rebuild-logic>
 ## Regeneration complete (par /gsr:status --rebuild)
 
@@ -165,7 +215,8 @@ Si le fichier est corrompu ou absent, le reconstruire en scannant :
 1. **Discovery** : `discovery.md` existe ? → `OK`. `.claude/discovery-session.md` existe ? → `En cours` (extraire phase). Sinon → `--`.
 2. **Bootstrap** : verifier chaque fichier (CLAUDE.md, SPEC.md, etc.) → `OK` ou `--`.
 3. **Plan** : scanner `docs/plan/` → compter epics, stories, STORY.md, phases/.
-4. **Execute / Ship** : `--` (pas encore implemente).
+4. **Execute** : scanner `docs/plan/epics/*/stories/*/phases/*/SUMMARY.md` → compter les phases executees. Si `.claude/execute-session.md` existe avec status `in-progress` → `En cours`.
+5. **Ship** : `--` (pas encore implemente).
 5. **Phase active** : la derniere phase avec statut `En cours` ou `OK`.
 6. **Historique** : vide (non reconstructible) — ajouter une ligne "Status regenere depuis l'etat du projet".
 </rebuild-logic>

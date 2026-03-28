@@ -170,10 +170,12 @@ Parallélisables : [02, 03, 04] après 01
 <phase id="[NN]" name="[slug]" epic="[epic-slug]" story="[story-slug]" depends="[phase-ids]">
   <estimate>[Nh]</estimate>
   <objective>[Objectif en 1 phrase claire]</objective>
+  <autonomy>[full-auto | supervised]</autonomy>
 
-  <task type="[setup|tdd|integration|config]">
+  <task type="[setup|tdd|tdd-optional|integration|config]">
     <n>[Nom de la tâche]</n>
     <files>[fichiers à créer/modifier, séparés par virgules]</files>
+    <tdd>[true | false — proposé par le planner, override possible]</tdd>
     <criteria>
       Given [contexte initial],
       when [action],
@@ -183,6 +185,10 @@ Parallélisables : [02, 03, 04] après 01
   </task>
 
   <!-- Répéter pour chaque task -->
+
+  <checkpoint type="[human-action | review | none]">
+    [Description de l'action manuelle requise, ou vide si none]
+  </checkpoint>
 
   <review>
     <checklist>
@@ -200,9 +206,18 @@ Parallélisables : [02, 03, 04] après 01
 | Type | Usage |
 |------|-------|
 | `setup` | Configuration, scaffolding, dépendances |
-| `tdd` | Implémentation avec tests (RED → GREEN → REFACTOR) |
+| `tdd` | Implémentation avec tests (RED → GREEN → REFACTOR) — TDD obligatoire |
+| `tdd-optional` | Implémentation où TDD est proposé mais overridable (test-after si désactivé) |
 | `integration` | Connexion entre composants, E2E |
 | `config` | Configuration infrastructure, CI, env |
+
+**Nouveaux attributs :**
+
+| Attribut | Niveau | Description |
+|----------|--------|-------------|
+| `<autonomy>` | phase | `full-auto` (pas de checkpoint humain sauf deviation regle 4) ou `supervised` (checkpoint apres chaque plan) |
+| `<tdd>` | task | `true` (RED-GREEN-REFACTOR) ou `false` (test-after). Proposé par le planner, overridable par l'utilisateur |
+| `<checkpoint>` | phase | `human-action` (action manuelle requise), `review` (review humaine), `none` (pas de checkpoint) |
 
 **Propriétés :**
 - Créé par /gsr:plan-phases (niveau 3)

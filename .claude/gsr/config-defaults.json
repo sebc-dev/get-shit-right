@@ -41,6 +41,22 @@
       "max_epics": 10,
       "max_review_cycles": 3,
       "timeout_minutes": 30
+    },
+    "execute": {
+      "quality_gates": {
+        "run_after": "task",
+        "lint": true,
+        "format": true,
+        "tests": true,
+        "coverage_threshold": 0
+      },
+      "max_retries_before_debug": 3,
+      "commit_style": "conventional"
+    },
+    "review": {
+      "enabled": true,
+      "criteria": ["security", "bugs", "conventions", "test-coverage"],
+      "checkpoint_on": "critical"
     }
   },
   "output": {

@@ -123,7 +123,9 @@ mkdir -p docs/plan/epics/[epic]/stories/[story]/phases/[NN]-[slug]
 
 Utiliser `<plan-template>`. Pour chaque phase dans `## Phases en cours` :
 - Remplir les attributs XML (id, name, epic, story, depends)
-- Remplir chaque task avec type, nom, fichiers, criteria, verify
+- Remplir `<autonomy>` (full-auto ou supervised, depuis la session)
+- Remplir chaque task avec type, nom, fichiers, `<tdd>` (true/false), criteria, verify
+- Remplir `<checkpoint>` (human-action, review, ou none, depuis la session)
 - Remplir la checklist de review
 
 Écrire dans `docs/plan/epics/[epic]/stories/[story]/phases/[NN]-[slug]/PLAN.md`.

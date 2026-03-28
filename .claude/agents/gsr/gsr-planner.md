@@ -223,11 +223,29 @@ Status: draft
 #### 4. Pour chaque phase, définir les tasks
 
 Chaque task a :
-- Un type : `setup` | `tdd` | `integration` | `config`
+- Un type : `setup` | `tdd` | `tdd-optional` | `integration` | `config`
 - Un nom clair
 - Les fichiers concernés
+- Un flag `tdd` : `true` ou `false` (proposé par le planner)
 - Des acceptance criteria (Given-When-Then)
 - Une commande de vérification
+
+**TDD conditionnel :**
+- Type `tdd` → `tdd=true` obligatoire (logique métier complexe, algorithmes)
+- Type `tdd-optional` → `tdd=true` proposé mais overridable (CRUD, glue code)
+- Types `setup`, `config` → `tdd=false` par défaut
+- Type `integration` → `tdd=true` proposé (tests d'intégration)
+
+**Autonomy par phase :**
+- `full-auto` : l'executor exécute sans checkpoint (sauf deviation règle 4)
+- `supervised` : checkpoint humain après chaque plan
+
+Heuristique : phases setup/config → `full-auto`. Phases avec logique métier complexe → `supervised`.
+
+**Checkpoint par phase :**
+- `human-action` : si la phase nécessite une action manuelle (ex: configurer un service externe, créer un compte)
+- `review` : si la phase mérite une review humaine avant de continuer
+- `none` : pas de checkpoint (défaut pour la majorité des phases)
 
 #### 5. Research Gates
 
@@ -255,8 +273,12 @@ Estimate: [Nh]
 Objective: [1 phrase]
 
 Tasks:
-1. [type] [nom] → [fichiers] → Given... when... then... → verify: [cmd]
-2. [type] [nom] → [fichiers] → Given... when... then... → verify: [cmd]
+Autonomy: [full-auto | supervised]
+Checkpoint: [none | human-action | review] — [description si applicable]
+
+Tasks:
+1. [type] [nom] → tdd:[true/false] → [fichiers] → Given... when... then... → verify: [cmd]
+2. [type] [nom] → tdd:[true/false] → [fichiers] → Given... when... then... → verify: [cmd]
 
 Review checklist:
 - [ ] [critère 1]
