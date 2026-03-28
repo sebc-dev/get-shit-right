@@ -49,7 +49,20 @@ fatal() { err "$@"; exit 1; }
 # Only files under .claude/ are supported (minus settings.json).
 # =============================================================================
 
-AVAILABLE_PHASES="discovery plan"
+AVAILABLE_PHASES="config discovery plan"
+
+# --- Config phase (always installed) ---
+
+phase_config_desc() {
+  echo "Configuration core: config file, defaults, environment scanner"
+}
+
+phase_config_files() {
+  cat <<'FILES'
+.claude/gsr/config-defaults.json
+.claude/gsr/bin/gsr-config.sh
+FILES
+}
 
 # --- Discovery phase ---
 
@@ -219,10 +232,24 @@ cmd_install() {
     echo -e "  ${C_GREEN}+${C_RESET} .claude/gsr/VERSION"
   fi
 
+  # --- Post-install: make config script executable + run env scan ---
+  if [[ "$DRY_RUN" != "1" && $failed -eq 0 ]]; then
+    local config_script="${TARGET}/.claude/gsr/bin/gsr-config.sh"
+    if [[ -f "$config_script" ]]; then
+      chmod +x "$config_script"
+      echo ""
+      (cd "$TARGET" && "$config_script" ensure && "$config_script" scan)
+    fi
+  fi
+
   if [[ "$DRY_RUN" != "1" && $failed -eq 0 ]]; then
     echo -e "\n${C_GREEN}Done.${C_RESET} Commands available:"
     for phase in $phases; do
       case "$phase" in
+        config)
+          echo "  /gsr:settings                                    Configure GSR"
+          echo "  /gsr:set-profile <quality|balanced|budget>       Switch model profile"
+          ;;
         discovery)
           echo "  /gsr:discover \"project description\""
           echo "  /gsr:discover-resume"

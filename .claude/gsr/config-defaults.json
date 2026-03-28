@@ -1,0 +1,51 @@
+{
+  "version": "1.0.0",
+  "environment": {
+    "jq_available": false,
+    "config_mode": "claude",
+    "git_cli": null,
+    "git_cli_authenticated": false,
+    "git_mcp": null,
+    "git_mcp_authenticated": false,
+    "git_provider": null
+  },
+  "models": {
+    "active_profile": "balanced",
+    "overrides": {}
+  },
+  "git": {
+    "branching_strategy": "none",
+    "branch_templates": {
+      "phase": "gsr/phase-{phase}-{slug}",
+      "story": "gsr/{epic}-{story}"
+    },
+    "conventional_commits": true
+  },
+  "workflow": {
+    "mode": "interactive",
+    "granularity": "flexible",
+    "research": {
+      "enabled": true,
+      "max_deep": 3,
+      "max_quick": 5
+    },
+    "discovery": {
+      "max_questions_per_phase": 5,
+      "max_returns_per_phase": 3,
+      "max_interview_exchanges": 30,
+      "timeout_minutes": 45
+    },
+    "plan": {
+      "max_stories_per_epic": 6,
+      "max_phases_per_story": 8,
+      "max_epics": 10,
+      "max_review_cycles": 3,
+      "timeout_minutes": 30
+    }
+  },
+  "output": {
+    "claude_md_max_lines": 60,
+    "spec_format": "lean",
+    "plan_format": "xml"
+  }
+}
